@@ -13,7 +13,7 @@ window.onload = function () {
 
     var geojson = L.geoJson(data, {
       onEachFeature: function (feature, layer) {
-        layer.bindPopup(feature.properties.NAME + "<p><b>" + feature.properties.P003005 + "</b></p>");
+        layer.bindPopup(feature.properties.NAME + "<p><b> test: " + feature.properties.P003005 + "</b></p>");
         console.log("here")
         pub = feature;
       }
