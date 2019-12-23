@@ -46,8 +46,10 @@ var mapOptions = {
   layers: [basemaps.OpenStreetMaps]
 };
 
+console.log("does this run")
+
 //Render Main Map
-var map = L.map("map", mapOptions);
+var map = L.map("my-map", mapOptions);
 
 //Render Zoom Control
 L.control
