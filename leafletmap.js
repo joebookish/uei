@@ -1,3 +1,7 @@
+//bind geojson
+
+    $.getJSON("geo_2000.geojson", function(data) {
+
 //Init Overlays
 var overlays = {};
 
@@ -41,15 +45,27 @@ var basemaps = {
 var mapOptions = {
   zoomControl: false,
   attributionControl: false,
-  center: [-29.0529434318608, 152.01910972595218],
+  center: [29.41148852531869, 261.5055084228516],
   zoom: 10,
   layers: [basemaps.OpenStreetMaps]
 };
 
 console.log("does this run")
 
-//Render Main Map
-var map = L.map("my-map", mapOptions);
+    var geojson = L.geoJson(data, {
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.NAME + "<p><b> test: " + feature.properties.P003005 + "</b></p>");
+        console.log("here")
+        pub = feature;
+      }
+    });
+
+    //Render Main Map
+
+    var map = L.map('my-map', mapOptions)
+    .fitBounds(geojson.getBounds());
+
+    geojson.addTo(map);
 
 //Render Zoom Control
 L.control
@@ -159,4 +175,6 @@ $('#latlng').click(function(e) {
     $tempElement.remove();
     alert("Copied: "+$("#latlng").text());
     $("#latlng").hide();
+});
+
 });
