@@ -4,7 +4,7 @@ var dataOptions_temp =[];
 
     $.getJSON("geo_2000.geojson", function(data) {
 
-var dataOptions = $.getJSON("geo_2015.geojson");
+var dataOptions = $.getJSON("acs5_variables.json");
 
             
 data_temp = data;
@@ -57,7 +57,6 @@ var mapOptions = {
   layers: [basemaps.OpenStreetMaps]
 };
 
-console.log("does this run")
 
     var geojson = L.geoJson(data, {
       onEachFeature: function (feature, layer) {
@@ -98,8 +97,14 @@ var layerControl = L.control
 var oldLayerControl = layerControl.getContainer();
 var newLayerControl = $("#layercontrol");
 newLayerControl.append(oldLayerControl);
-$(".leaflet-control-layers-list").prepend("<strong class='title'>Base Maps</strong><br>");
+$(".leaflet-control-layers-list").prepend("<strong class='title'> Maps</strong><br>");
 $(".leaflet-control-layers-separator").after("<br><strong class='title'>Layers</strong>");
+$(".leaflet-control-layers-separator").after("<strong class='title'>Test</strong><br>");
+
+// Varaiable Selection 
+var varSelection = new L.FeatureGroup();
+layerControl.addOverlay(editableLayers, "time_to_party");
+map.addLayer(varSelection);
 
 //######## Leaflet Draw
 var editableLayers = new L.FeatureGroup();
