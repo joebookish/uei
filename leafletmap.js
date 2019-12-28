@@ -4,7 +4,7 @@ var dataOptions_temp =[];
 
     $.getJSON("geo_2000.geojson", function(data) {
 
-var dataOptions = $.getJSON("acs5_variables.json");
+var dataOptions = $.getJSON("acs5_variables_original.json");
 
             
 data_temp = data;
