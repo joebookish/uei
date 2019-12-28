@@ -48,6 +48,9 @@ library(tidycensus)
 
 #### sf1 
 
+sf1_2000_variables_derb %>%
+  filter(name %in% sf1_interpolated$variable)
+
 sf1_variables <- as.data.frame.vector(c('OCCUPANCY STATUS:Housing Units:Total', 
                                         'OCCUPANCY STATUS:Housing Units:Occupied',
                                         'OCCUPANCY STATUS:Housing Units:Vacant',
@@ -60,6 +63,8 @@ sf1_variables <- as.data.frame.vector(c('OCCUPANCY STATUS:Housing Units:Total',
                                         'RACE:Asian alone',
                                         'RACE:HI alone',
                                         'RACE:Some other race alone',
+                                        'RACE:Total 2+ races',
+                                        'RACE:Total 2 races',
                                         'HISPANIC:Total Hispanic & NotHispanic',
                                         'HISPANIC:Total Hispanic or Latino',
                                         'HISPANIC:Total notHispanic or Latino'), nm = paste(deparse(substitute(name))))
@@ -189,7 +194,19 @@ acs5_variables <- as.data.frame.vector(c('Estimate!!EDUCATIONAL ATTAINMENT!!Popu
                                          '$200,000 or more',
                                          'With Supplemental Security Income',
                                          'With cash public assistance income',
-                                         'With Food Stamp/SNAP benefits in the past 12 months'), 
+                                         'With Food Stamp/SNAP benefits in the past 12 months',
+                                         'Estimate!!RACE!!Total population',
+                                         'Estimate!!RACE!!One race',
+                                         'Estimate!!RACE!!Two or more races',
+                                         'Estimate!!RACE!!One race!!White',
+                                         'Estimate!!RACE!!One race!!Black or African American',
+                                         'Estimate!!RACE!!One race!!American Indian and Alaska Native',
+                                         'Estimate!!RACE!!One race!!Asian',
+                                         'Estimate!!RACE!!One race!!Asian!!Asian Indian',
+                                         'Estimate!!RACE!!One race!!Native Hawaiian and Other Pacific Islander',
+                                         'Estimate!!RACE!!One race!!Some other race',
+                                         'Estimate!!HISPANIC OR LATINO AND RACE!!Total population	',
+                                         'Estimate!!HISPANIC OR LATINO AND RACE!!Hispanic or Latino (of any race)'), 
                                        nm = paste(deparse(substitute(name))))
 
 acs5_variables$variable <- c('DP02_0058E',
@@ -212,10 +229,22 @@ acs5_variables$variable <- c('DP02_0058E',
                              'DP03_0083E',
                              'DP03_0084E',
                              'DP03_0085E',
-                             'DP03_0070PE',
+                             'DP03_0070E',
                              'DP03_0072PE',
                              'DP03_0074PE',
-                             'DP03_0073PE')
+                             'DP03_0073PE',
+                             'DP05_0028E',
+                             'DP05_0029E',
+                             'DP05_0030E',
+                             'DP05_0032E',
+                             'DP05_0033E',
+                             'DP05_0034E',
+                             'DP05_0039E',
+                             'DP05_0040E',
+                             'DP05_0047E',
+                             'DP05_0052E',
+                             'DP05_0065E',
+                             'DP05_0066E')
 
 
 acs5_race <- as.data.frame.vector(c('Estimate!!RACE!!Total population',
