@@ -1,7 +1,14 @@
 //bind geojson
+var data_temp = [];
+var dataOptions_temp =[];
 
     $.getJSON("geo_2000.geojson", function(data) {
 
+var dataOptions = $.getJSON("geo_2015.geojson");
+
+            
+data_temp = data;
+dataOptions_temp = dataOptions;
 //Init Overlays
 var overlays = {};
 
@@ -55,7 +62,6 @@ console.log("does this run")
     var geojson = L.geoJson(data, {
       onEachFeature: function (feature, layer) {
         layer.bindPopup(feature.properties.NAME + "<p><b> test: " + feature.properties.P003005 + "</b></p>");
-        console.log("here")
         pub = feature;
       }
     });
