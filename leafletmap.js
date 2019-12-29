@@ -3,14 +3,26 @@ var geojson_temp = [];
 var data_temp = [];
 var dataOptions_temp =[];
 
+function buildHTML(loader,item,index){
+    loader += 
+    '<label><div><input type="checkbox" class="leaflet-control-layers-selector" value="' +
+    item.variable +
+    '"><span>' +
+    item.name +
+    '</span></div></label>';
+
+    return loader;
+}
+
 
 // main loading function
 $.getJSON("acs5_variables.json", function(dataOptions){
         $.getJSON("geo_2000.geojson", function(data) {
 
+              
                 //Init Overlays
                 var overlays = {};
-                
+
                 //Init BaseMaps
                 var basemaps = {
                   "OpenStreetMaps": L.tileLayer(
@@ -103,22 +115,26 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                     collapsed: false
                   })
                   .addTo(map);
+                
+
+                // not sure about this code... 
                 var oldLayerControl = layerControl.getContainer();
                 var newLayerControl = $("#layercontrol");
                 newLayerControl.append(oldLayerControl);
                 $(".leaflet-control-layers-list").prepend("<strong class='title'> Maps</strong><br>");
                 $(".leaflet-control-layers-separator").after("<br><strong class='title'>Layers</strong>");
-                // Varaiable Selection 
-                var varSelection = new L.FeatureGroup();
-                
-                function buildHTML(item,index){
-                    layerControl.addOverlay(varSelection, item);
-                }    
-                
-                console.log(dataOptions);
-                dataOptions.name.forEach(buildHTML)
-                map.addLayer(varSelection);
+                $(".leaflet-control-layers-separator").after("<br><strong class='title'>Moran</strong>");
+                $('strong:contains("Moran")').after('<div class="leaflet-control-layers-separator" style=""></div>');
 
+
+                // add layer control for tracts and school
+                var overlay = new L.FeatureGroup();
+                layerControl.addOverlay(overlay, "time_to_party");
+
+
+                // add menu options to select moran variables 
+                var loader = "";
+                console.log(dataOptions.forEach(buildHTML.bind(null,loader)));
 
                 // global variable assign for error checking 
                 data_temp = data;
