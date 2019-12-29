@@ -8,7 +8,7 @@ var dataOptions_temp =[];
 $.getJSON("geo_2000.geojson", function(data) {
 
         // loads the dataOptions 
-        var dataOptions = $.getJSON("acs5_variables_original.json");
+        var dataOptions = $.getJSON("acs5_variables.json");
 
         //Init Overlays
         var overlays = {};
