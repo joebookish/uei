@@ -48,9 +48,6 @@ library(tidycensus)
 
 #### sf1 
 
-sf1_2000_variables_derb %>%
-  filter(name %in% sf1_interpolated$variable)
-
 sf1_variables <- as.data.frame.vector(c('OCCUPANCY STATUS:Housing Units:Total', 
                                         'OCCUPANCY STATUS:Housing Units:Occupied',
                                         'OCCUPANCY STATUS:Housing Units:Vacant',
@@ -173,28 +170,30 @@ sf3_variables <- data.frame('name' = c('Total: Households',
 
 acs5_variables <- as.data.frame.vector(c('Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over',
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!Less than 9th grade',
-                                         'Estimate!!EDUCATIONAL ATTAINMENT!!High school graduate (includes equivalency)	',
+                                         'Estimate!!EDUCATIONAL ATTAINMENT!!High school graduate (includes equivalency)',
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!Some college, no degree	',
                                          "Estimate!!EDUCATIONAL ATTAINMENT!!Associate's degree",
                                          "Estimate!!EDUCATIONAL ATTAINMENT!!Bachelor's degree",
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!Graduate or professional degree',
                                          'Estimate!!LANGUAGE SPOKEN AT HOME!!Population 5 years and over',
                                          'Estimate!!LANGUAGE SPOKEN AT HOME!!English only',
+                                         'Estimate!!LANGUAGE SPOKEN AT HOME!!Language other than English',
+                                         'Estimate!!LANGUAGE SPOKEN AT HOME!!Language other than English!!Speak English less than "very well"',
                                          'Estimate!!LANGUAGE SPOKEN AT HOME!!Language other than English!!Spanish',
                                          'Estimate!!LANGUAGE SPOKEN AT HOME!!Language other than English!!Spanish!!Speak English less than "very well"',
-                                         'Less than $10,000',
-                                         '$10,000 to $14,999',
-                                         '$15,000 to $24,999',
-                                         '$25,000 to $34,999',
-                                         '$35,000 to $49,999',
-                                         '$50,000 to $74,999',
-                                         '$75,000 to $99,999',
-                                         '$100,000 to $149,999',
-                                         '$150,000 to $199,999',
-                                         '$200,000 or more',
-                                         'With Supplemental Security Income',
-                                         'With cash public assistance income',
-                                         'With Food Stamp/SNAP benefits in the past 12 months',
+                                         'Estimate!!INCOME!!Less than $10,000',
+                                         'Estimate!!INCOME!!$10,000 to $14,999',
+                                         'Estimate!!INCOME!!$15,000 to $24,999',
+                                         'Estimate!!INCOME!!$25,000 to $34,999',
+                                         'Estimate!!INCOME!!$35,000 to $49,999',
+                                         'Estimate!!INCOME!!$50,000 to $74,999',
+                                         'Estimate!!INCOME!!$75,000 to $99,999',
+                                         'Estimate!!INCOME!!$100,000 to $149,999',
+                                         'Estimate!!INCOME!!$150,000 to $199,999',
+                                         'Estimate!!INCOME!!$200,000 or more',
+                                         'Estimate!!INCOME!!With Supplemental Security Income',
+                                         'Estimate!!INCOME!!With cash public assistance income',
+                                         'Estimate!!INCOME!!With Food Stamp/SNAP benefits in the past 12 months',
                                          'Estimate!!RACE!!Total population',
                                          'Estimate!!RACE!!One race',
                                          'Estimate!!RACE!!Two or more races',
@@ -205,8 +204,7 @@ acs5_variables <- as.data.frame.vector(c('Estimate!!EDUCATIONAL ATTAINMENT!!Popu
                                          'Estimate!!RACE!!One race!!Asian!!Asian Indian',
                                          'Estimate!!RACE!!One race!!Native Hawaiian and Other Pacific Islander',
                                          'Estimate!!RACE!!One race!!Some other race',
-                                         'Estimate!!HISPANIC OR LATINO AND RACE!!Total population	',
-                                         'Estimate!!HISPANIC OR LATINO AND RACE!!Hispanic or Latino (of any race)'), 
+                                         'Estimate!!RACE!!One race!!Hispanic or Latino'), 
                                        nm = paste(deparse(substitute(name))))
 
 acs5_variables$variable <- c('DP02_0058E',
@@ -218,6 +216,8 @@ acs5_variables$variable <- c('DP02_0058E',
                              'DP02_0065E',
                              'DP02_0110E',
                              'DP02_0111E',
+                             'DP02_0112E',
+                             'DP02_0113E',
                              'DP02_0114E',
                              'DP02_0115E',
                              'DP03_0076E',
@@ -243,35 +243,8 @@ acs5_variables$variable <- c('DP02_0058E',
                              'DP05_0040E',
                              'DP05_0047E',
                              'DP05_0052E',
-                             'DP05_0065E',
-                             'DP05_0066E')
+                             'DP05_0065E')
 
-
-acs5_race <- as.data.frame.vector(c('Estimate!!RACE!!Total population',
-                                    'Estimate!!RACE!!One race',
-                                    'Estimate!!RACE!!Two or more races',
-                                    'Estimate!!RACE!!One race!!White',
-                                    'Estimate!!RACE!!One race!!Black or African American',
-                                    'Estimate!!RACE!!One race!!American Indian and Alaska Native',
-                                    'Estimate!!RACE!!One race!!Asian',
-                                    'Estimate!!RACE!!One race!!Asian!!Asian Indian',
-                                    'Estimate!!RACE!!One race!!Native Hawaiian and Other Pacific Islander',
-                                    'Estimate!!RACE!!One race!!Some other race',
-                                    'Estimate!!HISPANIC OR LATINO AND RACE!!Total population	',
-                                    'Estimate!!HISPANIC OR LATINO AND RACE!!Hispanic or Latino (of any race)'), nm = paste(deparse(substitute(name))))
-
-acs5_race$variable <- c('DP05_0028E',
-                        'DP05_0029E',
-                        'DP05_0030E',
-                        'DP05_0032E',
-                        'DP05_0033E',
-                        'DP05_0034E',
-                        'DP05_0039E',
-                        'DP05_0040E',
-                        'DP05_0047E',
-                        'DP05_0052E',
-                        'DP05_0065E',
-                        'DP05_0066E')
 
 
 # download stats and geography --------------------------------------------
@@ -441,114 +414,6 @@ for(i in 1:nrow(acs5_variables)){
                                              year = 2017,
                                              output = 'tidy',
                                              cache_table = TRUE))
-}
-
-acs5_race %<>%
-  mutate(ad2010 = 0,
-         ad2011 = 0,
-         ad2012 = 0,
-         ad2013 = 0,
-         ad2014 = 0,
-         ad2015 = 0,
-         ad2016 = 0,
-         ad2017 = 0)
-
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2010[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2010,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2011[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2011,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2012[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2012,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2013[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2013,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2014[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2014,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2015[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2015,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2016[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2016,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
-}
-
-for(i in 1:nrow(acs5_race)){
-  
-  acs5_race$ad2017[[i]] <- nest(get_acs(geography = "tract",
-                                        c(paste0(acs5_race$variable[[i]])),
-                                        state = "TX",
-                                        county = "BEXAR",
-                                        geometry = TRUE,
-                                        year = 2017,
-                                        output = 'tidy',
-                                        cache_table = TRUE))
 }
 
 
@@ -1009,251 +874,9 @@ geo_2017_stats <- merge(geo_2017 %>%
                         by.x = c('TRACT', 'NAME'), 
                         by.y = c('GEOID', 'NAME'))
 
-
-# acs5 race variables -----------------------------------------------------
-
-### 2010
-
-tmp1 <- unnest(acs5_race$ad2010[[1]], cols = c('data')) %>%
-  rename('ad2010' = 'estimate', 'geo_2010' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2010[[i]], cols = c('data')) %>%
-                      rename('ad2010' = 'estimate', 'geo_2010' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2010 <- tmp1
-
-geo_2010_race_stats <- acs_unnest_2010 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2010)
-
-geo_2010_race_stats <- merge(geo_2010, 
-                        geo_2010_race_stats %>%
-                          select(-geo_2010), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2011
-
-tmp1 <- unnest(acs5_race$ad2011[[1]], cols = c('data')) %>%
-  rename('ad2011' = 'estimate', 'geo_2011' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2011[[i]], cols = c('data')) %>%
-                      rename('ad2011' = 'estimate', 'geo_2011' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2011 <- tmp1
-
-geo_2011_race_stats <- acs_unnest_2011 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2011)
-
-geo_2011_race_stats <- merge(geo_2011, 
-                        geo_2011_race_stats %>%
-                          select(-geo_2011), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2012
-
-tmp1 <- unnest(acs5_race$ad2012[[1]], cols = c('data')) %>%
-  rename('ad2012' = 'estimate', 'geo_2012' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2012[[i]], cols = c('data')) %>%
-                      rename('ad2012' = 'estimate', 'geo_2012' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2012 <- tmp1
-
-geo_2012_race_stats <- acs_unnest_2012 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2012)
-
-geo_2012_race_stats <- merge(geo_2012, 
-                        geo_2012_race_stats %>%
-                          select(-geo_2012), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2013
-
-tmp1 <- unnest(acs5_race$ad2013[[1]], cols = c('data')) %>%
-  rename('ad2013' = 'estimate', 'geo_2013' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2013[[i]], cols = c('data')) %>%
-                      rename('ad2013' = 'estimate', 'geo_2013' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2013 <- tmp1
-
-geo_2013_race_stats <- acs_unnest_2013 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2013)
-
-geo_2013_race_stats <- merge(geo_2013 %>%
-                          rename('TRACT' = 'TRACTCE'), 
-                        geo_2013_race_stats %>%
-                          select(-geo_2013), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2014
-
-tmp1 <- unnest(acs5_race$ad2014[[1]], cols = c('data')) %>%
-  rename('ad2014' = 'estimate', 'geo_2014' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2014[[i]], cols = c('data')) %>%
-                      rename('ad2014' = 'estimate', 'geo_2014' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2014 <- tmp1
-
-geo_2014_race_stats <- acs_unnest_2014 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2014)
-
-geo_2014_race_stats <- merge(geo_2014 %>%
-                          rename('TRACT' = 'TRACTCE'), 
-                        geo_2014_race_stats %>%
-                          select(-geo_2014), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2015
-
-tmp1 <- unnest(acs5_race$ad2015[[1]], cols = c('data')) %>%
-  rename('ad2015' = 'estimate', 'geo_2015' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2015[[i]], cols = c('data')) %>%
-                      rename('ad2015' = 'estimate', 'geo_2015' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2015 <- tmp1
-
-geo_2015_race_stats <- acs_unnest_2015 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2015)
-
-geo_2015_race_stats <- merge(geo_2015 %>%
-                          rename('TRACT' = 'TRACTCE'), 
-                        geo_2015_race_stats %>%
-                          select(-geo_2015), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2016
-
-tmp1 <- unnest(acs5_race$ad2016[[1]], cols = c('data')) %>%
-  rename('ad2016' = 'estimate', 'geo_2016' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2016[[i]], cols = c('data')) %>%
-                      rename('ad2016' = 'estimate', 'geo_2016' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2016 <- tmp1
-
-geo_2016_race_stats <- acs_unnest_2016 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2016)
-
-geo_2016_race_stats <- merge(geo_2016 %>%
-                          rename('TRACT' = 'TRACTCE'), 
-                        geo_2016_race_stats %>%
-                          select(-geo_2016), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
-### 2017
-
-tmp1 <- unnest(acs5_race$ad2017[[1]], cols = c('data')) %>%
-  rename('ad2017' = 'estimate', 'geo_2017' = 'geometry') %>%
-  mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+'))
-
-for(i in 2:nrow(acs5_race)){
-  
-  tmp1 <- bind_rows(tmp1,
-                    unnest(acs5_race$ad2017[[i]], cols = c('data')) %>%
-                      rename('ad2017' = 'estimate', 'geo_2017' = 'geometry') %>%
-                      mutate(NAME = str_extract(NAME, 'Census Tract [[0-9]]+.[[0-9]]+')))
-  
-}
-
-acs_unnest_2017 <- tmp1
-
-geo_2017_race_stats <- acs_unnest_2017 %>%
-  select(-moe) %>%
-  mutate(GEOID = str_remove(GEOID,'48029'),
-         NAME = str_remove(NAME, 'Census Tract ')) %>%
-  spread(., variable, ad2017)
-
-geo_2017_race_stats <- merge(geo_2017 %>%
-                          rename('TRACT' = 'TRACTCE'), 
-                        geo_2017_race_stats %>%
-                          select(-geo_2017), 
-                        by.x = c('TRACT', 'NAME'), 
-                        by.y = c('GEOID', 'NAME'))
-
 # actually mapping --------------------------------------------------------
 
 library(sf)
-library(htmltools)
-library(htmlwidgets)
 library(geojsonio)
 
 geojson_2000 <-
@@ -1279,3 +902,191 @@ for(i in c(2010:2017)){
   geojson_write(get(paste0('geojson_race_',i)), file = paste0('geo_race_',i,'.geojson'))
   
 }
+
+
+# write csv's -------------------------------------------------------------
+
+library(jsonlite)
+
+acs5_variables <- 
+  cbind(acs5_variables %>% select(variable),
+         acs5_variables %>%
+           select(name, variable) %>%
+           do(colsplit(string = .$name, pattern = '!!', names = c('type', 'group', 'name'))))
+
+acs5_variables %<>%
+  mutate(name = str_remove(name, 'One race!!'),
+         name = str_remove(name, 'Language other than English!!'))
+
+write_json(acs5_variables %>%
+             select(name, variable), 'acs5_variables.json', simplifyVector = TRUE)
+
+write_json(sf1_variables %>%
+             select(name, variable), 'sf1_variables.json', simplifyVector = TRUE)
+
+write_json(sf3_variables %>%
+             select(name, variable), 'sf3_variables.json', simplifyVector = TRUE)
+
+write.csv(sf1_variables %>%
+select(name, variable), 'sf1_variables.csv', row.names = FALSE)
+write.csv(sf3_variables %>%
+select(name, variable), 'sf3_variables.csv', row.names = FALSE)
+write.csv(acs5_variables %>%
+select(name, variable), 'acs5_variables.csv', row.names = FALSE)
+
+
+# correllate spaces for moran's I -----------------------------------------
+
+
+### calculate centroids of census tracts
+
+geo_corr <- as.data.frame.vector(geojson_2000$geometry, nm = paste(deparse(substitute(coords))))
+geo_corr$tract <- geojson_2000$TRACT
+
+geo_corr %<>%
+  mutate(coorded = lapply(coords, flatten))
+
+geo_corr %<>%
+  mutate(coorded = lapply(coorded, unlist))
+
+geo_corr %<>%
+  select(-coords) %>%
+  unnest(., cols = c('coorded'))
+
+library(reshape2)
+library(sf)
+library(ggplot2)
+
+testo <- geo_2000_stats %>%
+    st_transform(crs = "+proj=longlat +datum=WGS84")
+
+testo_sp_cent <- gCentroid(as(testo, "Spatial"), byid = TRUE)
+
+testo_cent <- st_centroid(testo)
+
+ggplot() + 
+  geom_sf(data = testo, fill = 'white') +
+  geom_sf(data = testo_sp_cent %>% st_as_sf, color = 'blue') +
+  geom_sf(data = testo_cent, color = 'red')
+
+testo_cent$geometry[[1]] - testo_cent$geometry[[2]]
+
+library(raster)
+
+pointDistance(as.matrix(testo_cent$geometry[[1]]),as.matrix(testo_cent$geometry[[2]]), lonlat = TRUE)
+
+testo_matrix <- pointDistance(testo_cent, lonlat = TRUE, allpairs = TRUE)
+
+dput(geo_2000_stats$TRACT)
+
+testo_matrix <- cbind(testo_cent$TRACT, as.data.frame(testo_matrix))  
+colnames(testo_matrix) <- c("tract", "110100", "110200", "110300", "110400", "110500", "110600", 
+                            "110700", "110800", "110900", "111000", "120100", "120200", "120300", 
+                            "120400", "120501", "120502", "120600", "120701", "120702", "120800", 
+                            "120901", "120902", "121000", "121108", "121109", "121110", "121111", 
+                            "121112", "121114", "121115", "121116", "121117", "121118", "121203", 
+                            "121204", "121205", "121206", "121300", "121402", "121403", "121404", 
+                            "121501", "121504", "121505", "121506", "121507", "121508", "121601", 
+                            "121603", "121604", "121700", "121801", "121802", "121803", "121804", 
+                            "121806", "121807", "121901", "121902", "130100", "130200", "130300", 
+                            "130400", "130500", "130600", "130700", "130800", "130900", "131000", 
+                            "131100", "131200", "131300", "131400", "131501", "131502", "131601", 
+                            "131604", "131605", "131606", "131607", "131700", "131800", "140100", 
+                            "140200", "140300", "140400", "140500", "140600", "140700", "140800", 
+                            "140900", "141000", "141100", "141200", "141300", "141401", "141402", 
+                            "141500", "141600", "141700", "141800", "141900", "150100", "150200", 
+                            "150300", "150400", "150501", "150502", "150600", "150700", "150800", 
+                            "150900", "151000", "151100", "151200", "151300", "151400", "151500", 
+                            "151600", "151700", "151800", "151900", "152000", "152100", "152200", 
+                            "160100", "160200", "160300", "160400", "160500", "160600", "160701", 
+                            "160702", "160800", "160900", "161000", "161100", "161200", "161301", 
+                            "161302", "161401", "161402", "161501", "161502", "161600", "161700", 
+                            "161800", "161900", "162001", "162002", "170101", "170102", "170200", 
+                            "170300", "170401", "170402", "170500", "170600", "170700", "170800", 
+                            "170900", "171000", "171100", "171200", "171300", "171400", "171500", 
+                            "171600", "171700", "171801", "171802", "171902", "171903", "171906", 
+                            "171907", "171908", "171909", "171910", "171911", "171912", "172001", 
+                            "172002", "180100", "180201", "180202", "180300", "180400", "180501", 
+                            "180503", "180504", "180601", "180602", "180701", "180702", "180800", 
+                            "180901", "180902", "181001", "181003", "181004", "181005", "181100", 
+                            "181200", "181301", "181302", "181303", "181401", "181402", "181503", 
+                            "181504", "181505", "181506", "181601", "181602", "181701", "181703", 
+                            "181704", "181705", "181706", "181711", "181712", "181713", "181714", 
+                            "181715", "181716", "181717", "181718", "181719", "181801", "181803", 
+                            "181806", "181807", "181808", "181809", "181810", "181811", "181812", 
+                            "181900", "182000", "182101", "182102", "182103", "182104", "190100", 
+                            "190200", "190300", "190400", "190501", "190502", "190601", "190602", 
+                            "190700", "190800", "190901", "190902", "191002", "191003", "191004", 
+                            "191101", "191102", "191200", "191301", "191302", "191402", "191403", 
+                            "191405", "191406", "191407", "191408", "191409", "191501", "191502", 
+                            "191600", "191700", "191802", "191803", "191804", "191805")
+
+testo_matrix <- melt(testo_matrix, id.vars = c('tract'), variable.name = c('tract_2'), value.name = c('distance'))
+testo_matrix <- testo_matrix[!is.na(testo_matrix$distance),]
+
+library(mltools)
+
+testo_matrix <- hablar::retype(testo_matrix)
+
+testo_matrix_derb <- 
+  testo_matrix %>%
+  group_by(tract_2) %>%
+  nest(.)
+
+testo_matrix_derb_binned <- list(merge(testo_matrix_derb$data[[1]], bin_data(testo_matrix_derb$data[[1]][[2]], bins = 10, binType = 'explicit', boundaryType = 'lcro]', returnDT = TRUE), by.x = c('distance'), by.y = c('BinVal')))
+
+for(i in 2:nrow(testo_matrix_derb)){
+  
+  tmp1 <- list(merge(testo_matrix_derb$data[[i]], bin_data(testo_matrix_derb$data[[i]][[2]], bins = 10, binType = 'explicit', boundaryType = 'lcro]', returnDT = TRUE), by.x = c('distance'), by.y = c('BinVal')))
+  
+  testo_matrix_derb_binned<- append(testo_matrix_derb_binned, tmp1)
+  
+  }
+
+testo_matrix_derb_binned <- append(testo_matrix_derb_binned, list(hablar::retype(data.frame(distance = 0, tract = 191805, Bin = '[0,0)'))))
+
+testo_matrix_derb <- tibble(tract = testo_matrix_derb$tract_2, testo_matrix_derb_binned)
+
+testo_matrix_derb$testo_matrix_derb_binned[[1]]
+
+testo_matrix_derb %<>%
+  rename('tract_2' = 'tract') %>%
+  unnest(cols = c('testo_matrix_derb_binned'))
+
+testo_matrix_derb <- as.data.frame(testo_matrix_derb)
+
+testo_matrix_weights <- merge(
+  testo_matrix_derb %>%
+    mutate(binmin = str_extract(Bin, '[[:digit:]]+.[[:digit:]]+,')) %>%
+    mutate(binmin = as.numeric(str_remove(binmin, ','))) %>%
+    mutate(binmin = case_when(is.na(binmin) == TRUE ~ 0,
+                              is.na(binmin) == FALSE ~ binmin)),
+  testo_matrix_derb %>%
+    mutate(binmin = str_extract(Bin, '[[:digit:]]+.[[:digit:]]+,')) %>%
+    mutate(binmin = as.numeric(str_remove(binmin, ','))) %>%
+    mutate(binmin = case_when(is.na(binmin) == TRUE ~ 0,
+                              is.na(binmin) == FALSE ~ binmin)) %>%
+    group_by(tract_2) %>%
+    distinct(binmin) %>%
+    mutate(weight = rank(binmin, ties.method = 'min')),
+  by = c('tract_2', 'binmin')
+)
+
+weight_matrix <- bind_rows(testo_matrix_weights %>%
+                             select(tract_2, tract, weight), 
+                           testo_matrix_weights %>%
+                             select(tract, tract_2, weight) %>%
+                             rename('tract' = tract_2, 'tract_2' = 'tract')) %>%
+  rename('Tract' = 'tract', 'Tract_2' = 'tract_2') %>%
+  mutate(weight = case_when(weight == 1 ~ .9,
+                            weight == 2 ~ .8,
+                            weight == 3 ~ .7,
+                            weight == 4 ~ .6,
+                            weight == 5 ~ .5,
+                            weight == 6 ~ .4,
+                            weight == 7 ~ .3,
+                            weight == 8 ~ .2,
+                            weight == 9 ~ .1,
+                            weight == 10~ .05))
+
+write_json(weight_matrix, 'weight_matrix.json', simplifyVector = TRUE)
