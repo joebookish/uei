@@ -3,23 +3,33 @@ var geojson_temp = [];
 var data_temp = [];
 var dataOptions_temp =[];
 
+//CalcLMI(dataset,geojson.features,adjlist,true)
+
+function buildHTML(item,index){
+    var temp_loader =  
+    '<label><div><input type="checkbox" class="leaflet-control-layers-selector" value="' +
+    item.variable +
+    '"><span>' +
+    item.name +
+    '</span></div></label>';
+
+    return temp_loader;
+}
+
+
 // main loading function
 $.getJSON("acs5_variables.json", function(dataOptions){
         $.getJSON("geo_2000.geojson", function(data) {
 
-                // add moran's eye property
-                addGeojsonProp(data,"moran");
-
+              
                 //Init Overlays
                 var overlays = {};
 
                 //Init BaseMaps
                 var basemaps = {
-                  "Esri_WorldGrayCanvas": L.tileLayer(
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
+                  "OpenStreetMaps": L.tileLayer(
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     {
-                      
-	                  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
                       minZoom: 2,
                       maxZoom: 19,
                       id: "osm.streets"
@@ -57,18 +67,34 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                   attributionControl: false,
                   center: [29.41148852531869, 261.5055084228516],
                   zoom: 10,
-                  layers: [basemaps.Esri_WorldGrayCanvas]
+                  layers: [basemaps.OpenStreetMaps]
                 };
 
 
-                var geojson = L.geoJson(data, {});
+                    var geojson = L.geoJson(data, {
+                      onEachFeature: function (feature, layer) {
+                        layer.bindPopup(feature.properties.NAME + "<p><b> test: " + feature.properties.P003005 + "</b></p>");
+                        pub = feature;
+                      }
+                    });
+
+                    //Set tract colors 
+                    geojson.setStyle({color:"#32a866"})
 
                     //Render Main Map
                     var map = L.map('my-map', mapOptions)
                     .fitBounds(geojson.getBounds());
 
                     geojson.addTo(map);
-              
+
+
+                    // set the layer colors 
+                    geojson.eachLayer(function (layer) {
+                        if(layer.feature.properties.NAME == '1821.03') {
+                            layer.setStyle({fillColor :'blue'})
+                        }
+                    });
+
                 //Render Zoom Control
                 L.control
                   .zoom({
@@ -111,87 +137,15 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                 // add menu options to select moran variables 
                 var loader = "";
                 dataOptions.forEach(function (item,index) {
-                    loader += moranCheckboxHTML(item,index);
+                    loader += buildHTML(item,index);
                 });
 
-                var button = '<div id="run_moran"><button type="button">Run Moran!</button></div>'
                 $('strong:contains("Moran")').after('<div class="leaflet-control-layers-overlays">' +
                         loader +
-                        '</div>' + button);
+                        '</div>');
 
-                // set check values 
-                moranCheckboxSetup();
-                
-                // get selected varaibles for moran's eye
-                var moran_variables = [];
-                
-                $().ready(function(){
-                    $("input.leaflet-control-moran-selector:checked").map(function() { 
-                        moran_variables.push($(this).val()); 
-                    });
-                    moranRun(data,moran_variables);
-                    geojson.eachLayer(style);
-                });
-                
-            
-                $('#run_moran').click(function(){
-                    $("input.leaflet-control-moran-selector:checked").map(function() { 
-                         moran_variables.push($(this).val());                   
-                    });
-                    moranRun(data,moran_variables);
-                    geojson.eachLayer(style);
-                });
-             
-                function style(layer) {
-                    layer.setStyle({
-                        fillColor: getColor(layer.feature.properties.moran),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    }),
-                    layer.bindPopup("Tract: " + layer.feature.properties.NAME + "<p><b> test: " + layer.feature.properties.P003005 + "</b></p>")
-                }
-/*
-                    var geojson = L.geoJson(data, {
-                      onEachFeature: function (feature, layer) {
-                        layer.bindPopup("Tract: " + feature.properties.NAME + "<p><b> test: " + feature.properties.P003005 + "</b></p>");
-                        pub = feature;
-                      }
-                    });
-*/
+                $().check();
 
-
-                // set the layer colors
-                /*
-                geojson.eachLayer(function (layer) {
-                    if(layer.feature.properties.NAME == '1821.03') {
-                        layer.setStyle({fillColor :'blue'})
-                    }
-                });
-                */
-               
-                // run moran's eye based on selected variaibles
-                // assign value to moran property in features >> properties 
-                
-                // set the layer colors 
-                /*
-                geojson.eachLayer(function (feature) {
-                    feature.setStyle({
-                                    fillColor: getColor(feature.feature.properties.moran),
-                                    weight: 2,
-                                    opacity: 1,
-                                    color: 'white',
-                                    dashArray: '3',
-                                    fillOpacity: 0.7
-                                });
-                });
-                     //Set tract colors 
-                    geojson.setStyle({color:"#32a866"})
-
-               */                               
-                
                 // global variable assign for error checking 
                 data_temp = data;
                 dataOptions_temp = dataOptions;
