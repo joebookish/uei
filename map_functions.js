@@ -1,7 +1,9 @@
 function moranCheckboxHTML(item,index){
     var temp_loader =  
     '<label><div><input type="checkbox" class="leaflet-control-moran-selector" value="' +
-    item.variable +
+    item.variable.slice(0,-1) +
+    '" name="' +
+    item.name +
     '"><span>' +
     item.name +
     '</span></div></label>';
@@ -109,15 +111,17 @@ function generateDataset(geojson,moran_variables){
 }
 
 function getColor(d) {
-    return d > 0.8 ? '#800026' :
-           d > 0.6  ? '#BD0026' :
-           d > 0.5  ? '#E31A1C' :
-           d > 0.4  ? '#FC4E2A' :
-           d > 0.3   ? '#FD8D3C' :
-           d > 0.2   ? '#FEB24C' :
-           d > 0.1   ? '#FED976' :
-                      '#FFEDA0';
+    return d > 0.9 ? '#fff7fb' :
+           d > 0.8  ? '#ece7f2' :
+           d > 0.7  ? '#d0d1e6' :
+           d > 0.6  ? '#a6bddb' :
+           d > 0.5  ? '#74a9cf' :
+           d > 0.4   ? '#3690c0' :
+           d > 0.3   ? '#0570b0' :
+           d > 0.2   ? '#045a8d' :
+                      '#023858';
 }
+
 
 function addGeojsonProp(geojson,prop){
     geojson.features.forEach(function(feature){
@@ -126,4 +130,24 @@ function addGeojsonProp(geojson,prop){
     return "you did it!";
 }
 
+function buildMoranPopup(layer,moran_variables){
+    var temp_html = "";
+    for(i=0; i < moran_variables.name.length; i++ ){
+        temp_html += ("<p>"+ 
+                    moran_variables.name[i] +
+                    ": " +
+                    layer.feature.properties[moran_variables.val[i]] +  
+                    "</p>");
+    }
+  
+    return temp_html;
 
+}
+
+/* UTSA colors:
+ * https://imagecolorpicker.com/en
+ * https://www.utsa.edu/
+ * http://colorbrewer2.org/#type=sequential&scheme=YlOrRd&n=9
+ * blue - #0E213D
+ * orange - #DE3E1A
+ */

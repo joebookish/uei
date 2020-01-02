@@ -22,6 +22,7 @@ $.getJSON("acs5_variables.json", function(dataOptions){
 	                  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
                       minZoom: 2,
                       maxZoom: 19,
+                      opacity: 0.9,
                       id: "osm.streets"
                     }
                   ),
@@ -123,22 +124,29 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                 moranCheckboxSetup();
                 
                 // get selected varaibles for moran's eye
-                var moran_variables = [];
+                var moran_variables = {
+                    "name": [],
+                    "val":[]
+                };
                 
                 $().ready(function(){
                     $("input.leaflet-control-moran-selector:checked").map(function() { 
-                        moran_variables.push($(this).val()); 
+                        moran_variables.name.push($(this).attr("name")); 
+                        moran_variables.val.push($(this).val()); 
                     });
-                    moranRun(data,moran_variables);
+                    console.log(moran_variables);
+                    moranRun(data,moran_variables.val);
                     geojson.eachLayer(style);
                 });
                 
             
                 $('#run_moran').click(function(){
                     $("input.leaflet-control-moran-selector:checked").map(function() { 
-                         moran_variables.push($(this).val());                   
+                        moran_variables.name.push($(this).attr("name")); 
+                        moran_variables.val.push($(this).val());                   
                     });
-                    moranRun(data,moran_variables);
+                    moranRun(data,moran_variables.val);
+                    console.log(moran_variables);
                     geojson.eachLayer(style);
                 });
              
@@ -147,11 +155,15 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                         fillColor: getColor(layer.feature.properties.moran),
                         weight: 2,
                         opacity: 1,
-                        color: 'white',
+                        color: '#0E213D',
                         dashArray: '3',
                         fillOpacity: 0.7
                     }),
-                    layer.bindPopup("Tract: " + layer.feature.properties.NAME + "<p><b> test: " + layer.feature.properties.P003005 + "</b></p>")
+                    layer.bindPopup('<div><strong class="title">Tract: ' + layer.feature.properties.NAME + 
+                        '</strong><strong class="title-right" > Total Score: ' +
+                        layer.feature.properties.moran +
+                        "</strong></div>" +
+                        buildMoranPopup(layer,moran_variables));
                 }
 /*
                     var geojson = L.geoJson(data, {
