@@ -1,0 +1,12 @@
+(sum(tract)*sum(tract_2)*(weight)*(sum(tract_1)-mean(all_tracts))/nonzero_links)/(sum(tract)*mean(all_tracts^2)/n(tracts))
+
+( n(values)/nonzero_links ) *
+
+(
+
+(sum(tract) * sum(tract_2)) * 
+(shared_neighbors) *
+(tract.variable_value - mean.variable_value) *
+(tract_2.variable_value - mean.variable_value)
+
+)
