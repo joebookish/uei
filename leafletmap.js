@@ -17,9 +17,9 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                 //Init BaseMaps
                 var basemaps = {
                   "Esri_WorldGrayCanvas": L.tileLayer(
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                     {
-                      
+
 	                  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
                       minZoom: 2,
                       maxZoom: 19,
@@ -70,14 +70,14 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                     .fitBounds(geojson.getBounds());
 
                     geojson.addTo(map);
-              
+
                 //Render Zoom Control
                 L.control
                   .zoom({
                     position: "topleft"
                   })
                   .addTo(map);
-         
+
                 var sidebar = L.control
                   .sidebar({
                     autopan: false,
@@ -93,9 +93,9 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                     collapsed: false
                   })
                   .addTo(map);
-                
 
-                // not sure about this code... 
+
+                // not sure about this code...
                 var oldLayerControl = layerControl.getContainer();
                 var newLayerControl = $("#layercontrol");
                 newLayerControl.append(oldLayerControl);
@@ -110,7 +110,7 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                 layerControl.addOverlay(geojson, "census tracts");
 
 
-                // add menu options to select moran variables 
+                // add menu options to select moran variables
                 var loader = "";
                 dataOptions.forEach(function (item,index) {
                     loader += moranCheckboxHTML(item,index);
@@ -121,36 +121,36 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                         loader +
                         '</div>' + button);
 
-                // set check values 
+                // set check values
                 moranCheckboxSetup();
-                
+
                 // get selected varaibles for moran's eye
                 var moran_variables = {
                     "name": [],
                     "val":[]
                 };
-                
+
                 $().ready(function(){
-                    $("input.leaflet-control-moran-selector:checked").map(function() { 
-                        moran_variables.name.push($(this).attr("name")); 
-                        moran_variables.val.push($(this).val()); 
+                    $("input.leaflet-control-moran-selector:checked").map(function() {
+                        moran_variables.name.push($(this).attr("name"));
+                        moran_variables.val.push($(this).val());
                     });
                     console.log(moran_variables);
                     moranRun(data,moran_variables.val);
                     geojson.eachLayer(style);
                 });
-                
-            
+
+
                 $('#run_moran').click(function(){
-                    $("input.leaflet-control-moran-selector:checked").map(function() { 
-                        moran_variables.name.push($(this).attr("name")); 
-                        moran_variables.val.push($(this).val());                   
+                    $("input.leaflet-control-moran-selector:checked").map(function() {
+                        moran_variables.name.push($(this).attr("name"));
+                        moran_variables.val.push($(this).val());
                     });
                     moranRun(data,moran_variables.val);
                     console.log(moran_variables);
                     geojson.eachLayer(style);
                 });
-             
+
                 function style(layer) {
                     layer.setStyle({
                         fillColor: getColor(layer.feature.properties.moran),
@@ -160,7 +160,7 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                         dashArray: '3',
                         fillOpacity: 0.7
                     }),
-                    layer.bindPopup('<div><strong class="title">Tract: ' + layer.feature.properties.NAME + 
+                    layer.bindPopup('<div><strong class="title">Tract: ' + layer.feature.properties.NAME +
                         '</strong><strong class="title-right" > Total Score: ' +
                         layer.feature.properties.moran +
                         "</strong></div>" +
@@ -184,11 +184,11 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                     }
                 });
                 */
-               
+
                 // run moran's eye based on selected variaibles
-                // assign value to moran property in features >> properties 
-                
-                // set the layer colors 
+                // assign value to moran property in features >> properties
+
+                // set the layer colors
                 /*
                 geojson.eachLayer(function (feature) {
                     feature.setStyle({
@@ -200,12 +200,11 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                                     fillOpacity: 0.7
                                 });
                 });
-                     //Set tract colors 
+                     //Set tract colors
                     geojson.setStyle({color:"#32a866"})
+               */
 
-               */                               
-                
-                // global variable assign for error checking 
+                // global variable assign for error checking
                 data_temp = data;
                 schools_temp = schools;
                 dataOptions_temp = dataOptions;
