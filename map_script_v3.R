@@ -3,7 +3,7 @@
 
 ##install required packages auto-detect/install required packages
 
-list.of.packages <- c('tidyverse','magrittr','tidycensus','htmltab','reshape2','tigris','readxl','hablar','sf','htmltools','','','','','','','')
+list.of.packages <- c('tidyverse','magrittr','tidycensus','reshape2','tigris','readxl','hablar','sf','geojsonio', 'spdep', 'jsonlite')
 
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -16,16 +16,15 @@ rm(list.of.packages, new.packages)
 library(tidyverse)
 library(magrittr)
 library(tidycensus)
-library(htmltab)
 library(reshape2)
 library(tigris)
 library(readxl)
 library(hablar)
 library(sf)
-library(htmltools)
-library(htmlwidgets)
 library(geojsonio)
-
+library(jsonlite)
+library(spdep)
+library(jsonlite)
 
 # insert your census api key below -- Get one at:
 # http://api.census.gov/data/key_signup.html
@@ -36,13 +35,16 @@ readRenviron("~/.Renviron")
 # https://www.dshs.texas.gov/chs/popdat/downloads.shtm
 
 
-# collect variables  -----------------------------------------------------------
+# lists of variables  -----------------------------------------------------------
 
+### lists of yr 2000 variables 
 library(totalcensus)
 
-sf1_2000_variables_derb <- load_variables(2000, 'sf1', cache = TRUE)
-sf3_2000_variables_derb <- load_variables(2000, 'sf3', cache = TRUE)
-sf1_2010_variables_derb <- load_variables(2010, 'sf1', cache = TRUE)
+sf1_2000_variables <- load_variables(2000, 'sf1', cache = TRUE)
+sf3_2000_variables <- load_variables(2000, 'sf3', cache = TRUE)
+sf1_2010_variables <- load_variables(2010, 'sf1', cache = TRUE)
+
+### download specific variables
 
 library(tidycensus)
 
@@ -168,7 +170,7 @@ sf3_variables <- data.frame('name' = c('Total: Households',
 
 #### acs5
 
-acs5_variables <- as.data.frame.vector(c('Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over',
+acs5_variables <- data.frame(name = c('Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over',
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!Less than 9th grade',
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!High school graduate (includes equivalency)',
                                          'Estimate!!EDUCATIONAL ATTAINMENT!!Some college, no degree	',
@@ -205,9 +207,7 @@ acs5_variables <- as.data.frame.vector(c('Estimate!!EDUCATIONAL ATTAINMENT!!Popu
                                          'Estimate!!RACE!!One race!!Native Hawaiian and Other Pacific Islander',
                                          'Estimate!!RACE!!One race!!Some other race',
                                          'Estimate!!RACE!!One race!!Hispanic or Latino'), 
-                                       nm = paste(deparse(substitute(name))))
-
-acs5_variables$variable <- c('DP02_0058E',
+variable = c('DP02_0058E',
                              'DP02_0059E',
                              'DP02_0061E',
                              'DP02_0062E',
@@ -243,8 +243,7 @@ acs5_variables$variable <- c('DP02_0058E',
                              'DP05_0040E',
                              'DP05_0047E',
                              'DP05_0052E',
-                             'DP05_0065E')
-
+                             'DP05_0065E'))
 
 
 # download stats and geography --------------------------------------------
@@ -874,36 +873,6 @@ geo_2017_stats <- merge(geo_2017 %>%
                         by.x = c('TRACT', 'NAME'), 
                         by.y = c('GEOID', 'NAME'))
 
-# actually mapping --------------------------------------------------------
-
-library(sf)
-library(geojsonio)
-
-geojson_2000 <-
-  geo_2000_stats %>%
-  st_transform(crs = "+proj=longlat +datum=WGS84")
-
-geojson_write(geojson_2000, file = 'geo_2000.geojson')
-
-for(i in c(2001:2017)){
-  
-  assign(paste0('geojson_',i), get(paste0('geo_',i, '_stats')) %>%
-           st_transform(crs = "+proj=longlat +datum=WGS84"))
-  
-  geojson_write(get(paste0('geojson_',i)), file = paste0('geo_',i,'.geojson'))
-  
-}
-
-for(i in c(2010:2017)){
-  
-  assign(paste0('geojson_race_',i), get(paste0('geo_',i, '_race_stats')) %>%
-           st_transform(crs = "+proj=longlat +datum=WGS84"))
-  
-  geojson_write(get(paste0('geojson_race_',i)), file = paste0('geo_race_',i,'.geojson'))
-  
-}
-
-
 # write csv's -------------------------------------------------------------
 
 library(jsonlite)
@@ -919,13 +888,13 @@ acs5_variables %<>%
          name = str_remove(name, 'Language other than English!!'))
 
 write_json(acs5_variables %>%
-             select(name, variable), 'acs5_variables.json', simplifyVector = TRUE)
+             select(name, variable), 'acs5_variables.json')
 
 write_json(sf1_variables %>%
-             select(name, variable), 'sf1_variables.json', simplifyVector = TRUE)
+             select(name, variable), 'sf1_variables.json')
 
 write_json(sf3_variables %>%
-             select(name, variable), 'sf3_variables.json', simplifyVector = TRUE)
+             select(name, variable), 'sf3_variables.json')
 
 write.csv(sf1_variables %>%
 select(name, variable), 'sf1_variables.csv', row.names = FALSE)
@@ -941,31 +910,76 @@ select(name, variable), 'acs5_variables.csv', row.names = FALSE)
 library(spdep)
 library(jsonlite)
 
-weight_matrix <- poly2nb(geo_2000_stats)
+for(i in c(2000:2017)){
 
-weight_matrix <- nb2mat(weight_matrix, style="B",zero.policy=T)
+assign(paste0('weight_matrix_', i), poly2nb(get(paste0('geo_',i,'_stats'))))
+
+assign(paste0('weight_matrix_', i), nb2mat(get(paste0('weight_matrix_', i)), style="B",zero.policy=T))
+
+}
 
 # create index of census tracts
 
-tracts <- as.list(ls(pattern = 'geo_...._stats'))
+for(i in c(2000:2017)){
 
-tracts <- lapply(tracts, get)
+assign(paste0('tract_indeces_', i), as.data.frame.vector(unique(get(paste0('geo_',i,'_stats')) %$% TRACT), nm = paste(deparse(substitute(TRACT)))))
 
-for(i in 1:length(tracts)){
-tracts[[i]] <- tracts[[i]]$TRACT
+assign(paste0('tract_indeces_', i), get(paste0('tract_indeces_', i)) %>%
+         mutate(index = row_number(TRACT)))
+
+assign(paste0('geo_',i,'_stats'), merge(get(paste0('geo_',i,'_stats')), get(paste0('tract_indeces_', i)), by = c('TRACT')))
+
+assign(paste0('geojson_',i), get(paste0('geo_',i, '_stats')) %>%
+         st_transform(crs = "+proj=longlat +datum=WGS84"))
+
+geojson_write(get(paste0('geojson_',i)), file = paste0('geo_',i,'.geojson'))
+
+write_json(get(paste0('weight_matrix_', i)), paste0('weight_matrix_', i,'.json'), rownames = TRUE, colnames = TRUE, dataframe = c('rows'))
+
 }
 
-for(i in 1:(length(tracts) - 1)){
-TRACT <- append(tracts[[i]], tracts[[i+1]])
+# means/sdev for moran ----------------------------------------------------
+
+morans_i_sd <- geo_2000_stats %>%
+  as.data.frame(.) %>%
+  select(TRACT, year, starts_with('DP'))
+
+stats_dfs <- ls(pattern = 'geo_...._stats')
+
+stats_dfs <- lapply(stats_dfs, get)
+
+for(i in 2:length(stats_dfs)){
+  morans_i_sd <-   bind_rows(morans_i_sd, stats_dfs[[i]] %>% 
+                            select(TRACT, year, starts_with('DP')))
 }
 
-TRACT <- unique(TRACT)
+morans_i_sd <- as.data.frame(morans_i_sd)
 
-tract_indeces <- as.data.frame.vector(unique(TRACT), nm = paste(deparse(substitute(TRACT))))
+morans_i_sd %<>%
+  select(-geometry)
 
-tract_indeces %<>%
-mutate(count = row_number(TRACT))
+dp_variables <- dput(colnames(morans_i_sd %>% select(starts_with('DP'))))
 
-write_json(tract_indeces, 'tract_indeces.json', colnames = TRUE, dataframe = c('rows'))
-write_json(weight_matrix, 'weight_matrix.json', rownames = TRUE, colnames = TRUE, dataframe = c('rows'))
+morans_i_sd %<>% 
+  group_by(year) %>%
+  mutate_at(., c("DP02_0058", "DP02_0059", "DP02_0061", "DP02_0062", "DP02_0063", 
+                 "DP02_0064", "DP02_0065", "DP02_0110", "DP02_0111", "DP02_0112", 
+                 "DP02_0113", "DP02_0114", "DP02_0115", "DP03_0070", "DP03_0072P", 
+                 "DP03_0073P", "DP03_0074P", "DP03_0076", "DP03_0077", "DP03_0078", 
+                 "DP03_0080", "DP03_0081", "DP03_0082", "DP03_0083", "DP03_0084", 
+                 "DP03_0085", "DP05_0028", "DP05_0029", "DP05_0030", "DP05_0032", 
+                 "DP05_0033", "DP05_0034", "DP05_0039", "DP05_0040", "DP05_0047", 
+                 "DP05_0052", "DP05_0065"), .funs = function(x){x - mean(x, na.rm = TRUE)})
 
+morans_i_sd %<>% 
+  group_by(year) %<>%
+  mutate_at(., c("DP02_0058", "DP02_0059", "DP02_0061", "DP02_0062", "DP02_0063", 
+                 "DP02_0064", "DP02_0065", "DP02_0110", "DP02_0111", "DP02_0112", 
+                 "DP02_0113", "DP02_0114", "DP02_0115", "DP03_0070", "DP03_0072P", 
+                 "DP03_0073P", "DP03_0074P", "DP03_0076", "DP03_0077", "DP03_0078", 
+                 "DP03_0080", "DP03_0081", "DP03_0082", "DP03_0083", "DP03_0084", 
+                 "DP03_0085", "DP05_0028", "DP05_0029", "DP05_0030", "DP05_0032", 
+                 "DP05_0033", "DP05_0034", "DP05_0039", "DP05_0040", "DP05_0047", 
+                 "DP05_0052", "DP05_0065"), .funs = function(x){x / sd(x, na.rm = TRUE)})
+
+write_json(morans_i_sd, 'morans_i_sd.json')
