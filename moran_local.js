@@ -140,13 +140,32 @@ function plusV(v1,v2){
     return result;
 }
 
-//import tract weights
-$.getJSON("weight_matrix.json", function(weight_matrix) {
-for i in
-// count number of ones in the weight weight_matrix
+$.getJSON("geo_2000.json")
+$.getJSON("weight_matrix.json"
+$.getJson("tract_indeces.json")
+$.getJson("morans_i_sd.json")
+
+// after variables are selected by user and a census tract (tract_i) is chosen,
+// assign the number of selected variables to 'n'.
+// import geo_year.json
+// filter file 'geo_xxxx.json' for selected variables
+// import weight_matrix.json
+// start from [0,0] in weight_matrix and filter each census tract for 1's, which signify shared borders.
+// for each 1 in tract_i, pull tract_j's index and filter for its 1's.
+// the sum of shared 1's indicates the number of neighbords shared by both i and j.
+// This sum will be assigned the name 'Wij' value. Gather the census tracts' selected
+// variables from the geo_json file, each of which will be placed into the function 'zi' and 'zj' for each i-j pair.
+// multiply number of selected values (n) in tracts 1 and 2 times the number of shared boundaries and assign this value 'S'
+// for all WIJ values greater than 0, perform the following operation
+// selected variable = x
+// zi = (value_x - mean(variable))
+// ( (ni * nj * Wij * zi * zj) * S ) / (zi)^2 * n
+
+// for each variable, calculate I
+// get the year's matrix indeces, which show which index matches which census tract
+
+}
 
 //
-
-
 console.log(phrase)
-}
+}}
