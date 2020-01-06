@@ -5,6 +5,7 @@ var dataOptions_temp =[];
 
 // main loading function
 $.getJSON("acs5_variables.json", function(dataOptions){
+    $.getJSON("schools.json",function(schools){
         $.getJSON("geo_2000.geojson", function(data) {
 
                 // add moran's eye property
@@ -106,7 +107,7 @@ $.getJSON("acs5_variables.json", function(dataOptions){
 
                 // add layer control for tracts and school
                 var overlay = new L.FeatureGroup();
-                layerControl.addOverlay(overlay, "time_to_party");
+                layerControl.addOverlay(geojson, "census tracts");
 
 
                 // add menu options to select moran variables 
@@ -206,8 +207,10 @@ $.getJSON("acs5_variables.json", function(dataOptions){
                 
                 // global variable assign for error checking 
                 data_temp = data;
+                schools_temp = schools;
                 dataOptions_temp = dataOptions;
                 geojson_temp = geojson;
 
+        });
     });
 });
