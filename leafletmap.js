@@ -45,32 +45,7 @@ function uei_base(){
           opacity: 0.9,
           id: "osm.streets"
         }
-      ),
-      "Google-Map": L.tileLayer(
-        "https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
-        {
-          minZoom: 2,
-          maxZoom: 19,
-          id: "google.street"
-        }
-      ),
-      "Google-Satellite": L.tileLayer(
-        "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-        {
-          minZoom: 2,
-          maxZoom: 19,
-          id: "google.satellite"
-        }
-      ),
-      "Google-Hybrid": L.tileLayer(
-        "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
-        {
-          minZoom: 2,
-          maxZoom: 19,
-          id: "google.hybrid"
-        }
-      )
-    };
+      )};
 
     //Map Options
     var mapOptions = {
@@ -107,7 +82,7 @@ function uei_base(){
 
     //Render Layer Control & Move to Sidebar
     var layerControl = L.control
-      .layers(basemaps, overlays, {
+      .layers(basemaps,overlays, {
         position: "topright",
         collapsed: false
       })
@@ -118,7 +93,11 @@ function uei_base(){
     var oldLayerControl = layerControl.getContainer();
     var newLayerControl = $("#layercontrol");
     newLayerControl.append(oldLayerControl);
-    $(".leaflet-control-layers-list").prepend("<strong class='title'> Maps</strong><br>");
+    console.log(oldLayerControl);
+    $(".leaflet-control-layers-base").remove();
+    //$('input[name="leaflet-base-layers_670"]').siblings().remove();
+    //$('input[name="leaflet-base-layers_670"]').replaceWith('<section class="year-slider"></section>');
+    $(".leaflet-control-layers-list").prepend("<strong class='title'> Year</strong><br>");
     $(".leaflet-control-layers-separator").after("<br><strong class='title'>Layers</strong>");
     $(".leaflet-control-layers-separator").after("<br><strong class='title'>Moran</strong>");
     $('strong:contains("Moran")').after('<div class="leaflet-control-layers-separator" style=""></div>');
