@@ -1,15 +1,17 @@
 function sliderHTML(){
-
-    loader = '<div><p><label>Selected Year:</label>' +
-             '<input type="range" id="fromYear" value="2000" min="2000" step="1" max="2017"' + 
+    var start_year = 2000;
+    loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
+             '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2017"' + 
                     'oninput="document.getElementById(\'fYear\').innerHTML = this.value" />' +
-                '<label id="fYear"></label></p>' +
-            '<p><input type="submit" value="change year" onclick="ti()" /></p></div>';
+                '<label id="fYear">' + start_year + '</label></p>' +
+            '<p><input type="submit" value="change displayed year" onclick="updateYear()" /></p></div>';
     return loader;
 }
 
 function updateYear(element){
-    console.log(element.target.value);
+    var dYear = document.getElementById("fYear").innerHTML; 
+    var updateDYear = document.getElementById("dYear")
+    updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear)
 }
 
 function filterNA(year_vals,dataOptions){

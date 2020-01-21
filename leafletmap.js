@@ -25,7 +25,7 @@ $.when(
 ). then(uei_base);
 
 
-// main page setup function
+// loads the background map 
 function uei_base(){
     // add moran's eye property
     addGeojsonProp(mdata,"moran");
@@ -93,7 +93,6 @@ function uei_base(){
     var oldLayerControl = layerControl.getContainer();
     var newLayerControl = $("#layercontrol");
     newLayerControl.append(oldLayerControl);
-    console.log(oldLayerControl);
     $(".leaflet-control-layers-base").remove();
     //$('input[name="leaflet-base-layers_670"]').siblings().remove();
     //$('input[name="leaflet-base-layers_670"]').replaceWith('<section class="year-slider"></section>');
@@ -139,22 +138,16 @@ function uei_base(){
             moran_variables.name.push($(this).attr("name"));
             moran_variables.val.push($(this).val());
         });
-        console.log(moran_variables);
         moranRun(mdata,moran_variables.val);
         geojson.eachLayer(style);
     });
 
-   $('#fromYear').on('input change', function(e){
-       updateYear(e);
-   });
-
-   $('#run_moran').click(function(){
+    $('#run_moran').click(function(){
         $("input.leaflet-control-moran-selector:checked").map(function() {
             moran_variables.name.push($(this).attr("name"));
             moran_variables.val.push($(this).val());
         });
         moranRun(mdata,moran_variables.val);
-        console.log(moran_variables);
         geojson.eachLayer(style);
     });
 
