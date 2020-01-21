@@ -1,3 +1,17 @@
+function sliderHTML(){
+
+    loader = '<div><p><label>Selected Year:</label>' +
+             '<input type="range" id="fromYear" value="2000" min="2000" step="1" max="2017"' + 
+                    'oninput="document.getElementById(\'fYear\').innerHTML = this.value" />' +
+                '<label id="fYear"></label></p>' +
+            '<p><input type="submit" value="change year" onclick="ti()" /></p></div>';
+    return loader;
+}
+
+function updateYear(element){
+    console.log(element.target.value);
+}
+
 function filterNA(year_vals,dataOptions){
     console.log("this is a test");
     var nonas = {},  indexs = [];

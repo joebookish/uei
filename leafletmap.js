@@ -106,6 +106,12 @@ function uei_base(){
     // add layer control for tracts and school
     var overlay = new L.FeatureGroup();
     layerControl.addOverlay(geojson, "census tracts");
+    
+
+    var loader = sliderHTML();
+    $('strong:contains("Year")').after('<div class="leaflet-control-layers-overlays">' +
+            loader + '</div>');
+
 
 
     // add menu options to select moran variables
@@ -138,8 +144,11 @@ function uei_base(){
         geojson.eachLayer(style);
     });
 
+   $('#fromYear').on('input change', function(e){
+       updateYear(e);
+   });
 
-    $('#run_moran').click(function(){
+   $('#run_moran').click(function(){
         $("input.leaflet-control-moran-selector:checked").map(function() {
             moran_variables.name.push($(this).attr("name"));
             moran_variables.val.push($(this).val());
