@@ -1,3 +1,49 @@
+function sliderHTML(){
+    var start_year = 2000;
+    loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
+             '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2017"' + 
+                    'oninput="document.getElementById(\'fYear\').innerHTML = this.value" />' +
+                '<label id="fYear">' + start_year + '</label></p>' +
+            '<p><input type="submit" value="change displayed year" onclick="updateYear()" /></p></div>';
+    return loader;
+}
+
+function updateYear(element){
+    var dYear = document.getElementById("fYear").innerHTML; 
+    var updateDYear = document.getElementById("dYear")
+    updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear)
+}
+
+function filterNA(year_vals,dataOptions){
+    console.log("this is a test");
+    var nonas = {},  indexs = [];
+    nonas = Object.filterOutVal(year_vals,"NA")
+    nonas = Object.keys(nonas);
+    dataOptions.forEach(function(element, i){
+        console.log(element);
+        console.log(element.variable);
+        if(nonas.some((key) => key == element.variable.slice(0,-1) )){
+            indexs.push(i);
+        }
+    });
+    return indexs.map(i => dataOptions[i])    
+}
+
+Object.filterOutVal = function( obj, filter) {
+    var result = {}, key;
+    // ---------------^---- as noted by @CMS, 
+    //      always declare variables with the "var" keyword
+    for (key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key] != filter) {
+            result[key] = obj[key];
+        }
+    }
+
+    return result;
+}
+function checkboxPagePaste(){
+
+}
 function moranCheckboxHTML(item,index){
     var temp_loader =  
     '<label><div><input type="checkbox" class="leaflet-control-moran-selector" value="' +
@@ -39,24 +85,11 @@ function moranCheckboxSetup(){
 function moranRun(geojson,moran_variables){
     //dataset - is a vector set used to calculate the Moran's eye
     //geojson.features is the geospatial data    
-
-
-    // make the weights ... not super sure what any of this is doing... 
-    let adjlist = new Map()
-
-    //add region0's adjust list
-    let thisadj = new Map()
-
-    thisadj.set(0,80) 
-    thisadj.set(1,30) //1 is the id of the region, 30 is the corresponding weight
-    thisadj.set(2,40)
-    thisadj.set(3,10)
-    adjlist.set(0,thisadj)
     
     var dataset = generateDataset(geojson,moran_variables);
     var geospatial = extractGeospatial(geojson);
     
-    var moran_vector =  moranTemp(dataset,geospatial,adjlist);
+    var moran_vector =  moranTemp(dataset,geospatial);
    
     setMoranProp(geojson,moran_vector);
 
