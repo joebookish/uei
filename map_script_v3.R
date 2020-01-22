@@ -22,14 +22,13 @@ library(readxl)
 library(hablar)
 library(sf)
 library(geojsonio)
-library(jsonlite)
 library(spdep)
 library(jsonlite)
 
 # insert your census api key below -- Get one at:
 # http://api.census.gov/data/key_signup.html
 
-census_api_key(key = '3c92b89c452f8f39004686f5726c9b528a3bc51f', install = TRUE, overwrite = TRUE)
+census_api_key(key = '*', install = TRUE, overwrite = TRUE)
 readRenviron("~/.Renviron")
 
 # https://www.dshs.texas.gov/chs/popdat/downloads.shtm
@@ -916,6 +915,15 @@ assign(paste0('weight_matrix_', i), poly2nb(get(paste0('geo_',i,'_stats'))))
 
 assign(paste0('weight_matrix_', i), nb2mat(get(paste0('weight_matrix_', i)), style="B",zero.policy=T))
 
+weight_matrix_totals <- reshape2::melt(weight_matrix_2000) %>% filter(value > 0)
+
+weight_matrix_totals %<>%
+  select(-value) %>%
+  group_by(Var1) %>%
+  nest(.)
+
+which(weight_matrix_totals$data[[1]] %in% weight_matrix_totals$data[[3]])
+
 }
 
 # create index of census tracts
@@ -983,3 +991,250 @@ morans_i_sd %<>%
                  "DP05_0052", "DP05_0065"), .funs = function(x){x / sd(x, na.rm = TRUE)})
 
 write_json(morans_i_sd, 'morans_i_sd.json')
+
+
+ # weight matrix -----------------------------------------------------------
+
+library(reshape2)
+library(magrittr)
+
+weight_matrix_2000_df <- as.data.frame(weight_matrix_2000)
+weight_matrix_2000_melt <- melt(weight_matrix_2000)
+
+weight_matrix_sums <- as.data.frame.vector(list(which(weight_matrix_2000_df$V1 == 1)), nm = paste(deparse(substitute(shared_neighbors))))
+
+for(i in 2:length(weight_matrix_2000_df)){
+  weight_matrix_sums$shared_neighbors <- append(weight_matrix_sums$shared_neighbors, list(as.vector(which(get(weight_matrix_2000_df) %$% paste0('V', i))) == 1))
+}
+
+
+# import school addresses -------------------------------------------------
+
+google_1 <- google_1[-c(1:24),]
+
+colnames(google_1) <- c('school_1', 'school_2', 'school_3', 'school_4', 'school_5')
+
+google_1 %<>%
+  mutate(school_2 = case_when(school_1 == 'San Antonio' ~ paste0(school_1,", " , school_2)))
+
+google_1 %<>%
+  mutate(school_2 = lead(school_2, 1))
+
+google_1 %<>%
+  mutate(school_2 = paste0(str_extract(school_1, '[[0-9]]+.*'), ', ', school_2))
+
+google_1 %<>%
+  mutate(school_3 = case_when(str_detect(school_2, 'San Antonio') ~ school_2))
+
+google_1 %<>%
+mutate(school_3 = zoo::na.locf(school_3, fromLast = TRUE, na.rm = FALSE))
+
+google_1<- google_1[,-c(2)]
+
+google_1 %<>%
+  mutate(school_1 = str_remove(school_1, '.[[0-9]]+.*'),
+         school_1 = str_remove(school_1, 'Add to Compare'),
+         school_1 = str_remove(school_1, 'Alternative School'),
+         school_1 = str_remove(school_1, 'Charter School'),
+         school_1 = str_remove(school_1, '[[0-9]]+.*'))
+
+dataset %<>%
+  filter(str_detect(countyname_g9, 'BEXAR'))
+
+library(fuzzyjoin)
+
+fuzzy <- stringdist_left_join(dataset[,c(3)], google_1[,c(1)], by = c(campname_g9 = 'school_1'), ignore_case = T, method = "jw", distance_col = 'dist')
+
+fuzzy %<>% 
+filter(dist < .18) %>%
+  distinct()
+
+library(googleway)
+
+schools <- unique(dataset$campname_g9)
+
+set_key(c(*))
+
+testo <- list(google_places(search_string = schools, location = c(29.424349, -98.491142)))
+
+for(i in 1:length(schools)){
+temp <- list(google_places(search_string = schools[i], location = c(29.424349, -98.491142)))
+
+testo <- rbind(testo, temp)
+}
+
+testo[[2]]
+
+schools <- as.data.frame.vector(schools, nm = paste(deparse(substitute(name))))
+
+
+names <- testo[[2]]$results$name
+addresses <- testo[[2]]$results$formatted_address
+
+geometry <- testo[[2]]$results$geometry
+
+length(testo)
+
+
+for(i in 3:length(testo)){
+  names <- append(names, testo[[i]]$results$)
+}
+
+for(i in 3:length(testo)){
+  geometry <- append(geometry, testo[[i]]$results$geometry)
+}
+
+for(i in 3:length(testo)){
+  addresses <- append(addresses, testo[[i]]$results$formatted_address)
+}
+
+schools_df <- data.frame(names, addresses)
+
+fuzzy <- stringdist_left_join(dataset[,c(3)], schools_df, by = c(campname_g9 = 'names'), ignore_case = T, method = "jw", distance_col = 'dist')
+fuzzo <- stringdist_left_join(dataset[,c(3)], schools_df, by = c(campname_g9 = 'names'), ignore_case = T, method = "cosine", distance_col = 'dist')
+fuzzi <- stringdist_left_join(dataset[,c(3)], schools_df, by = c(campname_g9 = 'names'), ignore_case = T, method = "lv", distance_col = 'dist')
+fuzzio <- stringdist_left_join(dataset[,c(3)], schools_df, by = c(campname_g9 = 'names'), ignore_case = T, method = "lcs", distance_col = 'dist')
+
+fuzzy <- rbind(fuzzy, fuzzo)
+fuzzy <- rbind(fuzzy, fuzzi)
+fuzzy <- rbind(fuzzy, fuzzio)
+
+
+fuzzy <- distinct(fuzzy)
+fuzzy_1 <- distinct(fuzzy_1)
+
+library(magrittr)
+fuzzy %<>%
+  arrange(dist)
+
+fuzzy_1 <- fuzzy[c(1:11),]
+fuzzy <- fuzzy[-c(1:11),]
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,21,23,24,25,26,27,28,29,30,31,34,36,45,51,64),])
+
+fuzzy %<>%
+  filter(!names %in% fuzzy_1$names)
+
+fuzzy %<>%
+  filter(!campname_g9 %in% fuzzy_1$campname_g9)
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(8,17,19,44,59,184),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(1,2,3,4,7,12,31),])
+
+fuzzy_1 <- fuzzy_1[-c(56,53,51,49),]
+fuzzy_1 <- fuzzy_1[-c(48,46,47,45,44),]
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(1),])
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(3,7, 11, 13, 82),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(49,50,52,53, 63,69, 71, 85),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(27, 29, 38, 41, 52,54,112,116,138),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(143),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(88),])
+
+fuzzy_1 <- fuzzy_1[-c(73),]
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(651),])
+
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(1,29),])
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(1,34),])
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(157),])
+fuzzy_1 <- rbind(fuzzy_1, fuzzy[c(131),])
+
+testo <- merge(dataset[,c(3)], fuzzy_1, by = c('campname_g9'), all.x = TRUE)
+testo %<>%
+  distinct()
+
+fuzzy_1 %<>%
+  filter(campname_g9 != 'HARLANDALE ISD STEM ECHS-ALAMO COL')
+fuzzy_1 %<>%
+  filter(names != "Young Women's Leadership Academy Foundation")
+fuzzy_1 %<>%
+  filter(names != "School of Excellence In Education - Walker Elementary")
+fuzzy_1 %<>%
+  filter(names != "School of Science and Technology-Alamo")
+fuzzy_1 %<>%
+  filter(names != "School of Science and Technology - Discovery")
+fuzzy_1 %<>%
+  filter(!(campname_g9 == "SCHOOL OF SCIENCE AND TECHNOLOGY	" & names == "School of Science and Technology - Discovery"))
+
+testo %<>%
+  select(campname_g9, names, addresses) %>%
+  distinct()
+
+testo <- testo[-c(58),]
+
+testo[c(1),] <- c('ABOVE & BEYOND HIGH SCHOOL', 'Above & Beyond High School', 'Could Not Find')
+testo[c(30),] <- c('JUDSON SENIOR H S','Judson High School','9142 FM78, Converse, TX 78109, United States')
+testo[c(36),] <- c('LIVING WAY LEADERSHIP ACADEMY','Living Way Leadership Academy','4434 Roland Road, San Antonio, TX 78222')
+testo[c(15),] <- c('HARLANDALE ISD STEM ECHS-ALAMO COL','Harlandale ISD Stem Echs-Alamo Colleges at PAC','4040 Apollo Street, San Antonio, TX 78214')
+testo[c(48),] <- c('NORTHSIDE ALTER SCH','Northside Alternative School','144 Hunt Ln')
+testo[c(52),] <- c('RICK HAWKINS H S','Rick Hawkins High School (closed)','1826 Basse Rd, San Antonio, Texas 78213')
+testo[c(58),] <- c('SO SAN ANTONIO H S WEST','West Campus High School','5622 Ray Ellison Blvd, San Antonio, TX 78242')
+testo[c(67),] <- c('VIRGINIA ALLRED STACEY JR/SR H S','Stacey Jr-Sr High School','2469 Kenly Avenue, San Antonio, TX 78236')
+testo[c(43),] <- c('NAVARRO ACHIEVEMENT CTR','Navarro Achievement Center','623 S Pecos La Trinidad, San Antonio, TX 78207')
+
+testo <- hablar::retype(testo)
+
+
+# geochode ----------------------------------------------------------------
+
+library(ggmap)
+
+register_google(*)
+schools_geocode <- geocode(location = as.character(testo$addresses), output = c("latlona"), source = c("google"))
+
+testo$addresses <- tolower(testo$addresses)
+testo <- cbind(testo, schools_geocode)
+
+extras <- testo[is.na(testo$lon),]
+
+extra_extras<- geocode(location = extras$addresses, output = c("latlona"), source = c("google"))
+
+testo[c(49),] <- c("POSITIVE SOLUTIONS CHARTER SCHOOL", "San Antonio Positive Solutions Charter School", 
+  "1325 n flores st #100, san antonio, tx 78212, united states", 
+  "-98.5029029", "29.4381693", NA)
+
+
+schools_big_df <- merge(dataset, testo, by = c('campname_g9'), aall.x = TRUE)
+
+
+# break schools_big_df into years --------------------------------------------------------
+
+schools_2000 <- schools_big_df %>% filter(year_g9 == 2000) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2001 <- schools_big_df %>% filter(year_g9 == 2001) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2002 <- schools_big_df %>% filter(year_g9 == 2002) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2003 <- schools_big_df %>% filter(year_g9 == 2003) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2004 <- schools_big_df %>% filter(year_g9 == 2004) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2005 <- schools_big_df %>% filter(year_g9 == 2005) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2006 <- schools_big_df %>% filter(year_g9 == 2006) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2007 <- schools_big_df %>% filter(year_g9 == 2007) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2008 <- schools_big_df %>% filter(year_g9 == 2008) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2009 <- schools_big_df %>% filter(year_g9 == 2009) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2010 <- schools_big_df %>% filter(year_g9 == 2010) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2011 <- schools_big_df %>% filter(year_g9 == 2011) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2012 <- schools_big_df %>% filter(year_g9 == 2012) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2013 <- schools_big_df %>% filter(year_g9 == 2013) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2014 <- schools_big_df %>% filter(year_g9 == 2014) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+schools_2015 <- schools_big_df %>% filter(year_g9 == 2015) %>% select(year_g9, names, lat, lon, district_g9, size, hsgrad_4, ps_enroll_t5, grad12_ba)
+
+write_json(schools_2000, 'schools_2000.json')
+write_json(schools_2001, 'schools_2001.json')
+write_json(schools_2002, 'schools_2002.json')
+write_json(schools_2003, 'schools_2003.json')
+write_json(schools_2004, 'schools_2004.json')
+write_json(schools_2005, 'schools_2005.json')
+write_json(schools_2006, 'schools_2006.json')
+write_json(schools_2007, 'schools_2007.json')
+write_json(schools_2008, 'schools_2008.json')
+write_json(schools_2009, 'schools_2009.json')
+write_json(schools_2010, 'schools_2010.json')
+write_json(schools_2011, 'schools_2011.json')
+write_json(schools_2012, 'schools_2012.json')
+write_json(schools_2013, 'schools_2013.json')
+write_json(schools_2014, 'schools_2014.json')
+write_json(schools_2015, 'schools_2015.json')
