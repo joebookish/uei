@@ -1,27 +1,38 @@
+function updateYear(geojson){
+    var dYear = document.getElementById("fYear").innerHTML; 
+    var updateDYear = document.getElementById("dYear");
+    updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear);
+
+    updateTractYear(geojson,dYear); 
+}
+function readMoran(){
+    var moran_variables = {
+        "name": [],
+        "val":[]
+    };
+
+   $("input.leaflet-control-moran-selector:checked").map(function() {
+        moran_variables.name.push($(this).attr("name"));
+        moran_variables.val.push($(this).val());
+    });
+    return moran_variables;
+}
+
 function sliderHTML(){
     var start_year = 2000;
     loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
              '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2017"' + 
                     'oninput="document.getElementById(\'fYear\').innerHTML = this.value" />' +
                 '<label id="fYear">' + start_year + '</label></p>' +
-            '<p><input type="submit" value="change displayed year" onclick="updateYear()" /></p></div>';
+            '<p><button id="updateYear">change displayed year</button></p></div>';
     return loader;
 }
 
-function updateYear(element){
-    var dYear = document.getElementById("fYear").innerHTML; 
-    var updateDYear = document.getElementById("dYear")
-    updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear)
-}
-
 function filterNA(year_vals,dataOptions){
-    console.log("this is a test");
     var nonas = {},  indexs = [];
     nonas = Object.filterOutVal(year_vals,"NA")
     nonas = Object.keys(nonas);
     dataOptions.forEach(function(element, i){
-        console.log(element);
-        console.log(element.variable);
         if(nonas.some((key) => key == element.variable.slice(0,-1) )){
             indexs.push(i);
         }
@@ -41,9 +52,7 @@ Object.filterOutVal = function( obj, filter) {
 
     return result;
 }
-function checkboxPagePaste(){
 
-}
 function moranCheckboxHTML(item,index){
     var temp_loader =  
     '<label><div><input type="checkbox" class="leaflet-control-moran-selector" value="' +
@@ -60,15 +69,6 @@ function moranCheckboxHTML(item,index){
 function moranCheckboxSetup(){
     var limit = 5;
     
-    // check specific boxes
-    /*checkValues = ["DP02_0058E","DP02_0063E","DP02_0110E","DP03_0081E","DP05_0034E"];
-    $.each(checkValues, function(i, val){
-
-       $("input[value='" + val + "']").prop('checked', true);
-
-    });
-    */
-   
     // check the first boxes within limit
     for(i=0;i<limit;i++){
         $('input.leaflet-control-moran-selector').eq(i).prop('checked',true)
@@ -80,67 +80,6 @@ function moranCheckboxSetup(){
             alert("only "+limit+" variables may be chosen at once")
         }
     });
-}
-
-function moranRun(geojson,moran_variables){
-    //dataset - is a vector set used to calculate the Moran's eye
-    //geojson.features is the geospatial data    
-    
-    var dataset = generateDataset(geojson,moran_variables);
-    var geospatial = extractGeospatial(geojson);
-    
-    var moran_vector =  moranTemp(dataset,geospatial);
-   
-    setMoranProp(geojson,moran_vector);
-
-    return moran_vector;
-    //return [dataset,geospatial,adjlist];
-    //return CalcLMI(dataset,geospatial,adjlist,true);
-}
-
-function setMoranProp(data, moran_vector){
-    if(isPropSet(data,"moran").some(element => element === false)){
-        addGeojsonProp(data,"moran");       
-    }
-
-    data.features.forEach(function(feature, index){
-        feature.properties.moran = moran_vector[index];
-    });
-
-    return "the moran vector assigned " + moran_vector.toString();
-    
-}
-
-function isPropSet(data,prop){
-    var proptest = []; 
-    data.features.forEach(function(feature){
-        proptest.push(feature.properties.hasOwnProperty(prop));
-    });
-    return proptest;
-}
-
-function extractGeospatial(geojson){
-    
-    var temp_geospatial = [];
-    geojson.features.forEach(function(item,index){
-        temp_geospatial.push(item.geometry);
-    });
-
-    return temp_geospatial;
-}
-
-function generateDataset(geojson,moran_variables){
-    var temp_dataset = [];
-    geojson.features.forEach(function(geofeature,gindex){
-        var temp_moran = [];
-        (moran_variables);
-        moran_variables.forEach(function(moranvar,mindex){
-            temp_moran.push(geofeature.properties[moranvar]);
-        });
-        temp_dataset.push(temp_moran);
-    });
-
-    return temp_dataset;
 }
 
 function getColor(d) {
