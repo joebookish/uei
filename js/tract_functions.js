@@ -26,7 +26,6 @@ function colorTracts(mdata){
 function updateTractYear(geojson,year){
     var jsonFile = "data/geo_0000.geojson"; 
     jsonFile = jsonFile.replace(/\d+/g,year);
-    console.log(jsonFile); 
     $.getJSON(jsonFile, function(data) {
        addGeojsonProp(data,"moran");
        mdata = data;
@@ -39,6 +38,32 @@ function updateTractYear(geojson,year){
        });
     });
     
+}
+
+function getColor(d) {
+    return d > 0.9 ? '#fff7fb' :
+           d > 0.8  ? '#ece7f2' :
+           d > 0.7  ? '#d0d1e6' :
+           d > 0.6  ? '#a6bddb' :
+           d > 0.5  ? '#74a9cf' :
+           d > 0.4   ? '#3690c0' :
+           d > 0.3   ? '#0570b0' :
+           d > 0.2   ? '#045a8d' :
+                      '#023858';
+}
+
+function buildMoranPopup(layer,moran_variables){
+    var temp_html = "";
+    for(i=0; i < moran_variables.name.length; i++ ){
+        temp_html += ("<p>"+ 
+                    moran_variables.name[i] +
+                    ": " +
+                    layer.feature.properties[moran_variables.val[i]] +  
+                    "</p>");
+    }
+  
+    return temp_html;
+
 }
 
 

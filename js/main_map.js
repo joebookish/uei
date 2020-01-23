@@ -115,11 +115,8 @@ function uei_base(){
             loader + '</div>');
 
     // add moran variables and run button to side bar 
-    var loader = "";
-    dataOptions.forEach(function (item,index) {
-            loader += moranCheckboxHTML(item,index);
-    });
-
+    var loader = moranCheckboxSectionHTML(dataOptions);
+    
     var button = '<div id="run_moran"><button type="button">Run Moran!</button></div>'
     $('strong:contains("Moran")').after('<div class="leaflet-control-layers-overlays">' +
             loader +

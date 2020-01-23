@@ -5,6 +5,13 @@ function updateYear(geojson){
 
     updateTractYear(geojson,dYear); 
 }
+
+
+
+/*
+ * HTML setters and getters
+ */
+
 function readMoran(){
     var moran_variables = {
         "name": [],
@@ -28,29 +35,33 @@ function sliderHTML(){
     return loader;
 }
 
-function filterNA(year_vals,dataOptions){
-    var nonas = {},  indexs = [];
-    nonas = Object.filterOutVal(year_vals,"NA")
-    nonas = Object.keys(nonas);
-    dataOptions.forEach(function(element, i){
-        if(nonas.some((key) => key == element.variable.slice(0,-1) )){
-            indexs.push(i);
+function moranCheckboxSectionHTML(dataOptions){
+    var loader = [];
+    var section = [];
+    sindex = 0;
+    dataOptions.forEach(function (item,index) {
+        if(index == 0){
+            section[sindex] = item.group;
+            loader[sindex] = "";
         }
+        if(item.group != section[sindex]) {
+            console.log("this never runs");
+            sindex ++;
+            section[sindex] = item.group;
+            loader[sindex] = "";
+        }
+        loader[sindex] += moranCheckboxHTML(item,index);
     });
-    return indexs.map(i => dataOptions[i])    
-}
-
-Object.filterOutVal = function( obj, filter) {
-    var result = {}, key;
-    // ---------------^---- as noted by @CMS, 
-    //      always declare variables with the "var" keyword
-    for (key in obj) {
-        if (obj.hasOwnProperty(key) && obj[key] != filter) {
-            result[key] = obj[key];
-        }
-    }
-
-    return result;
+   
+    var loaderHTML = ""; 
+    
+    loader.forEach(function (item,index){
+        loaderHTML += '<div><label>'+ section[index] 
+                    +'</label></div><div class="content">' 
+                    + item + '</div>';
+    });
+    
+    return loaderHTML;
 }
 
 function moranCheckboxHTML(item,index){
@@ -82,18 +93,9 @@ function moranCheckboxSetup(){
     });
 }
 
-function getColor(d) {
-    return d > 0.9 ? '#fff7fb' :
-           d > 0.8  ? '#ece7f2' :
-           d > 0.7  ? '#d0d1e6' :
-           d > 0.6  ? '#a6bddb' :
-           d > 0.5  ? '#74a9cf' :
-           d > 0.4   ? '#3690c0' :
-           d > 0.3   ? '#0570b0' :
-           d > 0.2   ? '#045a8d' :
-                      '#023858';
-}
-
+/*
+ * general 
+ */
 
 function addGeojsonProp(geojson,prop){
     geojson.features.forEach(function(feature){
@@ -102,19 +104,32 @@ function addGeojsonProp(geojson,prop){
     return "you did it!";
 }
 
-function buildMoranPopup(layer,moran_variables){
-    var temp_html = "";
-    for(i=0; i < moran_variables.name.length; i++ ){
-        temp_html += ("<p>"+ 
-                    moran_variables.name[i] +
-                    ": " +
-                    layer.feature.properties[moran_variables.val[i]] +  
-                    "</p>");
-    }
-  
-    return temp_html;
 
+function filterNA(year_vals,dataOptions){
+    var nonas = {},  indexs = [];
+    nonas = Object.filterOutVal(year_vals,"NA")
+    nonas = Object.keys(nonas);
+    dataOptions.forEach(function(element, i){
+        if(nonas.some((key) => key == element.variable.slice(0,-1) )){
+            indexs.push(i);
+        }
+    });
+    return indexs.map(i => dataOptions[i])    
 }
+
+Object.filterOutVal = function( obj, filter) {
+    var result = {}, key;
+    // ---------------^---- as noted by @CMS, 
+    //      always declare variables with the "var" keyword
+    for (key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key] != filter) {
+            result[key] = obj[key];
+        }
+    }
+
+    return result;
+}
+
 
 /* UTSA colors:
  * https://imagecolorpicker.com/en
