@@ -1,16 +1,119 @@
-function updateYear(geojson){
+/*
+ *
+ * Year Slider setups
+ *
+ */
+
+function updateYear(geojson,markers){
     var dYear = document.getElementById("fYear").innerHTML; 
     var updateDYear = document.getElementById("dYear");
     updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear);
+    
+    //disable update year button
+    document.getElementById("updateYear").disabled = true;
+    
+    updateTractYear(geojson,dYear);
+    updateSchoolsYear(markers,dYear);
+}
 
-    updateTractYear(geojson,dYear); 
+function yearDisplay(){
+    //update the slider value
+    var sliderY =  document.getElementById("fromYear").value; 
+    document.getElementById('fYear').innerHTML = sliderY;
+   
+    //check to see if the sider is different from the display year
+    //disable the update year button if years are the same
+    var dYear = document.getElementById("dYear").innerHTML.match(/\d+/g)[0];
+    if(dYear == sliderY){
+        document.getElementById("updateYear").disabled = true;
+    } else {
+        document.getElementById("updateYear").disabled = false;
+    }
+
+}
+
+function sliderHTML(){
+    var start_year = 2000;
+    loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
+             '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2015"' + 
+                    'oninput=yearDisplay()>' +
+                '<label id="fYear">' + start_year + '</label></p>' +
+            '<p><button id="updateYear" disabled >change displayed year</button></p></div>';
+    return loader;
 }
 
 
 
 /*
- * HTML setters and getters
+ *
+ * Schools Toggle Setup
+ *
  */
+
+
+
+function readSchool(){
+    var school_variable = {
+        "name": '',
+        "val":''
+    };
+
+   $("input[name='school-display-data']:checked").map(function() {
+        school_variable.name = $(this).next().text();
+        school_variable.val = $(this).val();
+    });
+    return school_variable;
+}
+
+
+function schoolCheckboxSectionHTML(schoolOptions){
+    var loaderHTML = ""; 
+    
+    schoolOptions.forEach(function (item,index) {
+        if(index != 0){
+            loaderHTML += schoolCheckboxHTML(item,index);
+        } 
+    });
+  
+    return loaderHTML;
+}
+
+function schoolCheckboxHTML(item,index){
+    var temp_loader =  
+    '<label><input type="radio" name="school-display-data" class="leaflet-control-school-selector" value="' +
+    item.variable +
+    '" name="' +
+    item.name +
+    '"><span>' +
+    item.name +
+    '</span></label>';
+
+    return temp_loader;
+}
+
+
+/*
+ * 
+ * Moran menue setups
+ *
+ */
+
+function collapseVars() {
+    var coll = document.getElementsByClassName("dropdown");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight == "" || content.style.maxHeight == "0px"){
+          content.style.maxHeight = content.scrollHeight + "px";
+        } else {
+          content.style.maxHeight = "0px";
+        } 
+      });
+    }
+}
 
 function readMoran(){
     var moran_variables = {
@@ -25,27 +128,16 @@ function readMoran(){
     return moran_variables;
 }
 
-function sliderHTML(){
-    var start_year = 2000;
-    loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
-             '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2017"' + 
-                    'oninput="document.getElementById(\'fYear\').innerHTML = this.value" />' +
-                '<label id="fYear">' + start_year + '</label></p>' +
-            '<p><button id="updateYear">change displayed year</button></p></div>';
-    return loader;
-}
-
 function moranCheckboxSectionHTML(dataOptions){
     var loader = [];
     var section = [];
-    sindex = 0;
+    var sindex = 0;
     dataOptions.forEach(function (item,index) {
         if(index == 0){
             section[sindex] = item.group;
             loader[sindex] = "";
         }
         if(item.group != section[sindex]) {
-            console.log("this never runs");
             sindex ++;
             section[sindex] = item.group;
             loader[sindex] = "";
@@ -56,9 +148,10 @@ function moranCheckboxSectionHTML(dataOptions){
     var loaderHTML = ""; 
     
     loader.forEach(function (item,index){
-        loaderHTML += '<div><label>'+ section[index] 
-                    +'</label></div><div class="content">' 
-                    + item + '</div>';
+        loaderHTML += '<div><button class="dropdown"><span>'+ section[index] 
+                    + '</span><span class=“icon-L-arrow”></span>'
+                    +'</button><div class="dropdown-container">' 
+                    + item + '</div></div>';
     });
     
     return loaderHTML;
@@ -66,13 +159,13 @@ function moranCheckboxSectionHTML(dataOptions){
 
 function moranCheckboxHTML(item,index){
     var temp_loader =  
-    '<label><div><input type="checkbox" class="leaflet-control-moran-selector" value="' +
+    '<label><input type="checkbox" class="leaflet-control-moran-selector" value="' +
     item.variable.slice(0,-1) +
     '" name="' +
     item.name +
     '"><span>' +
     item.name +
-    '</span></div></label>';
+    '</span></label>';
 
     return temp_loader;
 }
@@ -92,6 +185,8 @@ function moranCheckboxSetup(){
         }
     });
 }
+
+
 
 /*
  * general 
@@ -131,10 +226,3 @@ Object.filterOutVal = function( obj, filter) {
 }
 
 
-/* UTSA colors:
- * https://imagecolorpicker.com/en
- * https://www.utsa.edu/
- * http://colorbrewer2.org/#type=sequential&scheme=YlOrRd&n=9
- * blue - #0E213D
- * orange - #DE3E1A
- */
