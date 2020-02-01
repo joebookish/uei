@@ -1,6 +1,6 @@
 //global variables for testing
 var weight_matrix, morans_i_sd;
-var dataOptions, schools, mdata;
+var dataOptions, schoolOptions, schools, mdata;
 
 // load data
 $.when(
@@ -15,7 +15,12 @@ $.when(
     $.getJSON("data/acs5_variables.json", function(data){
         dataOptions = data;
     }),
-    $.getJSON("data/schools.json",function(data) {
+    
+    $.getJSON("data/schools_variables.json",function(data) {
+        schoolOptions = data;
+    }),   
+    
+    $.getJSON("data/schools_2000.json",function(data) {
         schools = data;
     }),
 
@@ -26,10 +31,23 @@ $.when(
 
 // main page setup
 function uei_base(){
-
+    
+    // sets default poly line styles 
+    // excludes census tracts
+    var myStyle = {
+        className: 'poly-style'        
+    };
+    L.Path.mergeOptions(myStyle);
+    L.Polyline.mergeOptions(myStyle);
+    L.Polygon.mergeOptions(myStyle);
+    L.Rectangle.mergeOptions(myStyle);
+    L.Circle.mergeOptions(myStyle);
+    L.CircleMarker.mergeOptions(myStyle);
+    
     /*
      * setup base map and overlays
      */
+
     // add moran's eye property
     addGeojsonProp(mdata,"moran");
 
@@ -69,9 +87,18 @@ function uei_base(){
 
     geojson.addTo(map);
 
-
+    
+    //add markers to the map
+    //var markers = L.markerClusterGroup();
+    
+    var markers = L.markerClusterGroup({
+        iconCreateFunction: sizeClusterIconCreate(schools) });   
+   
+    markers = makeSchoolMarkers(schools,markers);
+    map.addLayer(markers);
+  
     /*
-     * Adding Controls
+     * Adding Control
      */
     //Render Zoom Control
     L.control
@@ -88,7 +115,7 @@ function uei_base(){
       })
       .addTo(map);
 
-    //Render Layer Control & Move to Sidebar
+    //Render Layer Control
     var layerControl = L.control
       .layers(basemaps,overlays, {
         position: "topright",
@@ -96,37 +123,89 @@ function uei_base(){
       })
       .addTo(map);
 
-
-    // add sections to sidebar 
+    // move Layer Control to sidebar slider 
     var oldLayerControl = layerControl.getContainer();
     var newLayerControl = $("#layercontrol");
     newLayerControl.append(oldLayerControl);
-    $(".leaflet-control-layers-base").remove();
-    $(".leaflet-control-layers-list").prepend("<strong class='title'> Year</strong><br>");
-    $(".leaflet-control-layers-separator").after("<br><strong class='title'>Layers</strong>");
-    $(".leaflet-control-layers-separator").after("<br><strong class='title'>Moran</strong>");
-    $('strong:contains("Moran")').after('<div class="leaflet-control-layers-separator" style=""></div>');
 
-    // add layer control to side bar for tracts and school
-    layerControl.addOverlay(geojson, "census tracts");
-
-    var loader = sliderHTML();
-    $('strong:contains("Year")').after('<div class="leaflet-control-layers-overlays">' +
-            loader + '</div>');
-
-    // add moran variables and run button to side bar 
-    var loader = moranCheckboxSectionHTML(dataOptions);
+/*
+ *
+ * Layer Controller 
+ *
+ */
     
-    var button = '<div id="run_moran"><button type="button">Run Moran!</button></div>'
-    $('strong:contains("Moran")').after('<div class="leaflet-control-layers-overlays">' +
-            loader +
-            '</div>' + button);
+    // setup Layer and Year Controller div
+    $(".leaflet-control-layers-list").prepend("<div id='control-wrap'></div>");
+    
+    // add Layer Control for tracts and school
+    layerControl.addOverlay(geojson, "census tracts");
+    layerControl.addOverlay(markers, "high schools");
+    // remove Layer Control base map toggle
+    $(".leaflet-control-layers-base").remove();
+    $(".leaflet-control-layers-separator").remove();
 
+    // move tracts and school controlls to new location
+    $("#control-wrap").prepend("<div class='control-stack' id='layer-layer-control'><div><p><label>displayed data: </label></p></div></div>");
+    var temp_overlays = $(".leaflet-control-layers-overlays").remove()
+    $('#layer-layer-control').append(temp_overlays);
+
+
+/*
+ *
+ * Year Controller 
+ *
+ */
+    // year controller
+    $("#control-wrap").prepend("<div class='control-stack' id='year-layer-control'></div>");
+    var loader = sliderHTML();
+    $('#year-layer-control').after('<div class="leaflet-control-layers-year">' +
+            loader + '</div>');
+    // set update year function
+    $('#updateYear').click(function(){
+        updateYear(geojson,markers);
+    });
+
+/*
+ *
+ * School Controller
+ *
+ */
+    // school features controller 
+    $("#control-wrap").after("<div class='control' id='schools'><strong class='title'>School Features</strong></div>");
+
+    var sloader = schoolCheckboxSectionHTML(schoolOptions);
+    $('strong:contains("School")').after('<div class="leaflet-control-layers-school">' +
+            sloader + '</div>');
+    
+
+    // set toggle schools function
+    $('.leaflet-control-layers-school').change(function(){
+        updateSchoolsPopup(markers,schools);
+    });
+
+
+/*
+ *
+ * Census Tract Controller
+ *
+ */
+    // census tract features controller, controls moran inpu variables 
+    $("#schools").after("<div class='control' id='tracts'><strong class='title'>Census Tract Features</strong></div>");
+
+    var tloader = moranCheckboxSectionHTML(dataOptions);
+    
+    var tbutton = '<div id="run_moran"><button type="button">Run Moran!</button></div>'
+    $('strong:contains("Census Tract")').after('<div class="leaflet-control-layers-moran">' +
+            tloader +
+            '</div>' + tbutton);
+    
     // pre check moran variables for load and set javascript altert 
     moranCheckboxSetup();
 
     // load tract colors
     $().ready(function(){
+        // add event listeners to Moran checkbox sections
+        collapseVars();   
         geojson.eachLayer(colorTracts(mdata));
     });
 
@@ -135,10 +214,6 @@ function uei_base(){
         geojson.eachLayer(colorTracts(mdata));
     });
 
-    // set update year function
-    $('#updateYear').click(function(){
-        updateYear(geojson);
-    });
 }
 
 
