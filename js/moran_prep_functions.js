@@ -45,17 +45,24 @@ function extractGeospatial(geojson){
     return temp_geospatial;
 }
 
-function generateDataset(mdata,moran_variables){
+function generateDataset(mdata,moran_variables,firstIndexOnly=false){
     var temp_dataset = [];
-    mdata.features.forEach(function(geofeature,gindex){
+    
+    for(var i=0; i<mdata.features.length; i++){
+        var geofeature = mdata.features[i];
+        var gindex = i;
         var temp_moran = [];
-        (moran_variables);
         moran_variables.forEach(function(moranvar,mindex){
             temp_moran.push(geofeature.properties[moranvar]);
         });
         temp_dataset.push(temp_moran);
-    });
-
+        if(firstIndexOnly){
+            if(i == 0) {
+                break;
+            }
+        }
+    }
+    
     return temp_dataset;
 }
 

@@ -115,16 +115,22 @@ function collapseVars() {
     }
 }
 
-function readMoran(){
+function readMoran(checked = true){
     var moran_variables = {
         "name": [],
         "val":[]
     };
-
-   $("input.leaflet-control-moran-selector:checked").map(function() {
-        moran_variables.name.push($(this).attr("name"));
-        moran_variables.val.push($(this).val());
-    });
+    if(checked){
+       $("input.leaflet-control-moran-selector:checked").map(function() {
+            moran_variables.name.push($(this).attr("name"));
+            moran_variables.val.push($(this).val());
+        });
+    } else {
+        $("input.leaflet-control-moran-selector").map(function() {
+            moran_variables.name.push($(this).attr("name"));
+            moran_variables.val.push($(this).val());
+        });
+    }
     return moran_variables;
 }
 
