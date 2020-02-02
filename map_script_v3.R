@@ -28,7 +28,7 @@ library(jsonlite)
 # insert your census api key below -- Get one at:
 # http://api.census.gov/data/key_signup.html
 
-census_api_key(key = '*', install = TRUE, overwrite = TRUE)
+census_api_key(key = '****************************************', install = TRUE, overwrite = TRUE)
 readRenviron("~/.Renviron")
 
 # https://www.dshs.texas.gov/chs/popdat/downloads.shtm
@@ -948,7 +948,7 @@ write_json(get(paste0('weight_matrix_', i)), paste0('weight_matrix_', i,'.json')
 
 # means/sdev for moran ----------------------------------------------------
 
-morans_i_sd <- geo_2000_stats %>%
+morans_i_mn <- geo_2000_stats %>%
   as.data.frame(.) %>%
   select(TRACT, year, starts_with('DP'))
 
@@ -957,18 +957,18 @@ stats_dfs <- ls(pattern = 'geo_...._stats')
 stats_dfs <- lapply(stats_dfs, get)
 
 for(i in 2:length(stats_dfs)){
-  morans_i_sd <-   bind_rows(morans_i_sd, stats_dfs[[i]] %>% 
+  morans_i_mn <-   bind_rows(morans_i_mn, stats_dfs[[i]] %>% 
                             select(TRACT, year, starts_with('DP')))
 }
 
-morans_i_sd <- as.data.frame(morans_i_sd)
+morans_i_mn <- as.data.frame(morans_i_mn)
 
-morans_i_sd %<>%
+morans_i_mn %<>%
   select(-geometry)
 
-dp_variables <- dput(colnames(morans_i_sd %>% select(starts_with('DP'))))
+dp_variables <- dput(colnames(morans_i_mn %>% select(starts_with('DP'))))
 
-morans_i_sd %<>% 
+morans_i_mn %<>% 
   group_by(year) %>%
   mutate_at(., c("DP02_0058", "DP02_0059", "DP02_0061", "DP02_0062", "DP02_0063", 
                  "DP02_0064", "DP02_0065", "DP02_0110", "DP02_0111", "DP02_0112", 
@@ -979,7 +979,8 @@ morans_i_sd %<>%
                  "DP05_0033", "DP05_0034", "DP05_0039", "DP05_0040", "DP05_0047", 
                  "DP05_0052", "DP05_0065"), .funs = function(x){x - mean(x, na.rm = TRUE)})
 
-morans_i_sd %<>% 
+morans_i_sd <-  
+  morans_i_mn %>% 
   group_by(year) %<>%
   mutate_at(., c("DP02_0058", "DP02_0059", "DP02_0061", "DP02_0062", "DP02_0063", 
                  "DP02_0064", "DP02_0065", "DP02_0110", "DP02_0111", "DP02_0112", 
@@ -990,6 +991,7 @@ morans_i_sd %<>%
                  "DP05_0033", "DP05_0034", "DP05_0039", "DP05_0040", "DP05_0047", 
                  "DP05_0052", "DP05_0065"), .funs = function(x){x / sd(x, na.rm = TRUE)})
 
+write_json(morans_i_mn, 'morans_i_mn.json')
 write_json(morans_i_sd, 'morans_i_sd.json')
 
 

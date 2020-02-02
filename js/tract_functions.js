@@ -91,7 +91,8 @@ function updateTractYear(geojson,year){
     $.getJSON(jsonFile, function(data) {
        addGeojsonProp(data,"moran");
        mdata = data;
-       
+       disableMoranChecks(mdata);
+
        $.getJSON(weightMatrix, function(wmdata){
             weight_matrix = wmdata;
 
@@ -108,6 +109,37 @@ function updateTractYear(geojson,year){
     
 }
 
+// check what variables the tract has
+
+function checkTractVarvsMoran(mdata){
+   var menuMoranVars = readMoran(false).val;
+   var definedMoranVars = generateDataset(mdata,menuMoranVars,true)[0];
+   definedMoranVars = definedMoranVars.map(function(e,i){
+       if(e != "NA" && e != undefined){
+            return false;
+       } else {
+            return true;
+       }
+   });
+   return definedMoranVars;
+}
+
+// disable checkboxes 
+function disableMoranChecks(mdata){
+    definedMoranVars = checkTractVarvsMoran(mdata);
+    $("input.leaflet-control-moran-selector").each(function(i){
+        if(definedMoranVars[i]){
+            $(this).prop("checked",false);
+        }
+        $(this).attr("disabled",definedMoranVars[i])
+    });
+}
+
+/*
+ *
+ * create tract popup
+ *
+ */
 
 function buildMoranPopup(layer,moran_variables){
     var temp_html = "";

@@ -201,6 +201,7 @@ function uei_base(){
     
     // pre check moran variables for load and set javascript altert 
     moranCheckboxSetup();
+    disableMoranChecks(mdata);
 
     // load tract colors
     $().ready(function(){

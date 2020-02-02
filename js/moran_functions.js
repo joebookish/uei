@@ -15,6 +15,11 @@ function moranTemp(dataset,geospatial){
     return moran_vector;
 }
 
+function calcZs(mdata){
+    var moran_variables = readMoran();
+
+}
+
 function calcMean(arr_num){
     var i,j;
     arr_mean = [];
