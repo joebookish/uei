@@ -105,7 +105,7 @@ function getUILclass(size){
  */
 
 function updateSchoolsYear(markers,year){
-    var jsonFile = "data/schools_2000.json"; 
+    var jsonFile = "data_prod/schools_2000.json"; 
     jsonFile = jsonFile.replace(/\d+/g,year);
     $.getJSON(jsonFile, function(data) {
        schools = data; 

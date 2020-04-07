@@ -1,33 +1,39 @@
 //global variables for testing
-var weight_matrix, morans_i_sd;
+var weight_matrix, morans_i_sd, morans_i_mean;
 var dataOptions, schoolOptions, schools, mdata;
 
 // load data
 $.when(
-    $.getJSON("data/weight_matrix_2000.json", function(data){
+    $.getJSON("data_prod/weight_matrix_2000.json", function(data){
         weight_matrix = data;
     }),
 
-    $.getJSON("data/morans_i_sd.json", function(data){
-        morans_i_sd = data;    
+    $.getJSON("data_prod/morans_i_sd.json", function(data){
+        morans_i_sd = data;
+        morans_i_sd_year = morans_i_sd.filter(e => e.year == "2000");
+
     }),
 
-    $.getJSON("data/acs5_variables.json", function(data){
+    $.getJSON("data_prod/acs5_variables.json", function(data){
         dataOptions = data;
     }),
     
-    $.getJSON("data/schools_variables.json",function(data) {
+    $.getJSON("data_prod/schools_variables2.json",function(data) {
         schoolOptions = data;
     }),   
     
-    $.getJSON("data/schools_2000.json",function(data) {
+    $.getJSON("data_prod/schools_2000.json",function(data) {
         schools = data;
     }),
 
-    $.getJSON("data/geo_2000.geojson", function(data) {
+    $.getJSON("data_prod/geo_2000.geojson", function(data) {
         mdata = data;
+    }),
+    $.getJSON("data_prod/mdata.json", function(data){
+        tempmdata = data;
     })
-). then(uei_base);
+).then(uei_base)
+ .then(style_js);
 
 // main page setup
 function uei_base(){
@@ -106,15 +112,14 @@ function uei_base(){
         position: "topleft"
       })
       .addTo(map);
-
+    
+    //Render Basic sidebar
     var sidebar = L.control
-      .sidebar({
-        autopan: false,
-        container: "sidebar",
-        position: "right"
-      })
-      .addTo(map);
-
+        .sidebar('sidebar', {
+            position: 'right'
+        })
+        .addTo(map);
+    
     //Render Layer Control
     var layerControl = L.control
       .layers(basemaps,overlays, {
@@ -127,7 +132,6 @@ function uei_base(){
     var oldLayerControl = layerControl.getContainer();
     var newLayerControl = $("#layercontrol");
     newLayerControl.append(oldLayerControl);
-
 /*
  *
  * Layer Controller 
@@ -135,7 +139,8 @@ function uei_base(){
  */
     
     // setup Layer and Year Controller div
-    $(".leaflet-control-layers-list").prepend("<div id='control-wrap'></div>");
+    $(".leaflet-control-layers-list").addClass("section")
+    $(".leaflet-control-layers-list").prepend('<div id="control-wrap" class="level"></div>');
     
     // add Layer Control for tracts and school
     layerControl.addOverlay(geojson, "census tracts");
@@ -145,7 +150,7 @@ function uei_base(){
     $(".leaflet-control-layers-separator").remove();
 
     // move tracts and school controlls to new location
-    $("#control-wrap").prepend("<div class='control-stack' id='layer-layer-control'><div><p><label>displayed data: </label></p></div></div>");
+    $("#control-wrap").prepend("<div id='layer-layer-control'><div class='level-item title is-1'>displayed data:</div></div>");
     var temp_overlays = $(".leaflet-control-layers-overlays").remove()
     $('#layer-layer-control').append(temp_overlays);
 
@@ -156,9 +161,8 @@ function uei_base(){
  *
  */
     // year controller
-    $("#control-wrap").prepend("<div class='control-stack' id='year-layer-control'></div>");
     var loader = sliderHTML();
-    $('#year-layer-control').after('<div class="leaflet-control-layers-year">' +
+    $('#control-wrap').prepend('<div class="leaflet-control-layers-year">' +
             loader + '</div>');
     // set update year function
     $('#updateYear').click(function(){
@@ -171,11 +175,10 @@ function uei_base(){
  *
  */
     // school features controller 
-    $("#control-wrap").after("<div class='control' id='schools'><strong class='title'>School Features</strong></div>");
+    $("#control-wrap").after("<div class='control level leaflet-control-layers-school' id='schools'><strong class='title is-1 level-item'>student outcomes</strong></div>");
 
     var sloader = schoolCheckboxSectionHTML(schoolOptions);
-    $('strong:contains("School")').after('<div class="leaflet-control-layers-school">' +
-            sloader + '</div>');
+    $('strong:contains("student")').after(sloader);
     
 
     // set toggle schools function
@@ -190,14 +193,12 @@ function uei_base(){
  *
  */
     // census tract features controller, controls moran inpu variables 
-    $("#schools").after("<div class='control' id='tracts'><strong class='title'>Census Tract Features</strong></div>");
+    $("#schools").after("<div class='control level' id='tracts'><strong class='title is-1 level-item'>census tract features</strong></div>");
 
     var tloader = moranCheckboxSectionHTML(dataOptions);
     
-    var tbutton = '<div id="run_moran"><button type="button">Run Moran!</button></div>'
-    $('strong:contains("Census Tract")').after('<div class="leaflet-control-layers-moran">' +
-            tloader +
-            '</div>' + tbutton);
+    var tbutton = '<button id="run_moran" class="button level-item" type="button">update features</button>'
+    $('strong:contains("census tract")').after(tloader + tbutton);
     
     // pre check moran variables for load and set javascript altert 
     moranCheckboxSetup();

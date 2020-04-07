@@ -1,72 +1,99 @@
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <title>Leaflet JS Customisation Demo</title>
+    <meta charset="utf-8">
+    <title>leaflet js customisation demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
-    <link rel="stylesheet" href="https://gitcdn.link/repo/nickpeihl/leaflet-sidebar-v2/master/css/leaflet-sidebar.min.css">
-    <link rel="stylesheet" type="text/css" href="static/Leaflet.markercluster-1.1.0/dist/MarkerCluster.Default.css">
-    <link rel="stylesheet" type="text/css" href="static/Leaflet.markercluster-1.1.0/dist/MarkerCluster.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" type="text/css" href="fonts.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="css/leaflet.css">
+    <link rel="stylesheet" type="text/css" href="css/leaflet-sidebar.min.css">
+    <link rel="stylesheet" type="text/css" href="static/leaflet.markercluster-1.1.0/dist/markercluster.default.css">
+    <link rel="stylesheet" type="text/css" href="static/leaflet.markercluster-1.1.0/dist/markercluster.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/fonts.css">
  
   </head>
   <body>
 
-    <div id="sidebar" class="leaflet-sidebar collapsed">
-      <!-- Nav tabs -->
-      <div class="leaflet-sidebar-tabs">
+    <div id="sidebar" class="sidebar collapsed">
+      <!-- nav tabs -->
+      <div class="sidebar-tabs">
         <ul role="tablist">
-          <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
-          <li><a href="#profile" id="toggledraw" role="tab"><i class="fa fa-pen"></i></a></li>
+          <li>
+              <a href="#mcontrols" role="tab">
+                <span class ="icon-gear"></span>
+              </a>
+          </li>
+        <li>
+              <a href="#mkey" id="toggledraw" role="tab">
+                <span class ="icon-key_2"></span>
+              </a>
+          </li>
+         <li>
+              <a href="#minfo" role="tab">
+                <span class ="icon-info"></span>
+              </a>
+          </li>
         </ul>
       </div>
 
-      <!-- Tab panes -->
-      <div class="leaflet-sidebar-content">
-        <div class="leaflet-sidebar-pane" id="home">
-          <h1 class="leaflet-sidebar-header">
-            CONTROLS            
-            <span class="leaflet-sidebar-close"><span class="icon-L-arrow"></span></span>
-          </h1>
-        
-          <!-- Leaflet Control Layers selects to this id  -->
-          <span id="layercontrol"></span>
-        
-        </div>
+      <!-- tab panes -->
+      <div class="sidebar-content">
+        <div class="sidebar-pane" id="mcontrols">
+           <section class="hero">
+              <div class="hero-body">
+                <div class="container sidebar-close">
+                  <h1 class="title"><span class="icon-rt"></span> Controls</h1>
+                </div>
+              </div>
+            </section>
+              
+              <!-- Control Layers selects to this id  -->
+              <span id="layercontrol"></span>
+          </div>
 
-        <div class="leaflet-sidebar-pane" id="profile">
-          <h1 class="leaflet-sidebar-header">
-           KEY 
-            <span class="leaflet-sidebar-close"><i class="fa fa-caret-right"></i></span>
-          </h1>
-         
-          <!-- key info selects to this id  -->
-          <span id="keyinfo"></span>
- 
-        </div>
+        <div class="sidebar-pane" id="mkey">
+           <section class="hero">
+              <div class="hero-body">
+                <div class="container sidebar-close">
+                  <h1 class="title"><span class="icon-rt"></span> Key</h1>
+                </div>
+              </div>
+            </section>
+              
+              <!-- key selects to this id  -->
+              <span id="key"></span>
+          </div>
+
+        <div class="sidebar-pane" id="minfo">
+           <section class="hero">
+              <div class="hero-body">
+                <div class="container sidebar-close">
+                  <h1 class="title"><span class="icon-rt"></span> Info</h1>
+                </div>
+              </div>
+            </section>
+              
+              <!-- info  selects to this id  -->
+              <span id="info"></span>
+          </div>
+
+       </div>
       </div>
     </div>
 
-    <div id="my-map"></div>
+    <div id="my-map" class="sidebar-map"></div>
 
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'></script>
-    <script src='https://gitcdn.link/repo/nickpeihl/leaflet-sidebar-v2/master/js/leaflet-sidebar.min.js'></script>
+    <script src='js/jquery-3.4.1.min.js'></script>
+    <script src='js/leaflet.js'></script>
+    <script src="js/leaflet-sidebar.min.js"></script>
     <script src="static/Leaflet.markercluster-1.1.0/dist/leaflet.markercluster-src.js"></script>
     <script src="js/moran_prep_functions.js"></script>
     <script src="js/moran_functions.js"></script>
     <script src="js/school_functions.js"></script>
     <script src="js/tract_functions.js"></script>
     <script src="js/menue_functions.js"></script>
+    <script src="js/style.js"></script>
     <script src="js/main_map.js"></script>
-
   </body>
 </html>
