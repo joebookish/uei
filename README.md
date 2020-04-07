@@ -7,3 +7,5 @@ https://programminghistorian.org/en/lessons/mapping-with-python-leaflet
 1. python3 -m http.server 8080
 
 Code for geojson files written in R, script located in 'R Stuff'
+
+python linter file in data folder is used to aggregate the yearly datatables

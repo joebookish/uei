@@ -1,0 +1,205 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --main-sch-color-sm: #ffeda0;
+  --main-sch-color-sm-bk1: #ffeda0bb;
+  --main-sch-color-sm-bk2: #ffeda099;
+  --main-sch-color-md: #feb24c;
+  --main-sch-color-md-bk1: #feb24cbb;
+  --main-sch-color-md-bk2: #feb24c99;
+  --main-sch-color-lg: #f03b20;
+  --main-sch-color-lg-bk1: #f03b20bb;
+  --main-sch-color-lg-bk2: #f03b2099;
+}
+
+html,
+body,
+#my-map {
+  height: 100%;
+  background-color: #DE3E1A;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Leaflet Layers Control */
+
+.leaflet-control-layers {
+  border-radius: none;
+  box-shadow: none;
+}
+
+.leaflet-control-layers-expanded {
+  width: 100% !important;
+  padding: 0px;
+  background-color: transparent;
+  border: none !important;
+}
+
+#layercontrol .title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+
+/* Style Sidebar Elements */
+
+label { 
+    padding-left: 0.25rem; 
+}
+
+input[type=range] {
+
+    padding: 0.333rem;
+
+}
+
+.level {
+    align-items: flex-start;
+}
+
+.control {
+    flex-direction: column;
+}
+
+#run_moran {
+    margin-top: 0.333rem;
+}
+
+label > span {
+    padding-left: 0.25rem;
+}
+
+
+/* 
+ * 
+ * modifications to 
+ * font icons
+ * 
+ */
+
+.icon-school:before {
+    -webkit-text-stroke: 1.5px black;
+    font-size: 3rem;
+    content: "\e900";
+}
+
+.icon-plus, .icon-minus {
+    font-size: 0.75rem;
+}
+
+.icon-key_2, .icon-gear, .icon-info {
+    font-size: 1.2rem;
+}
+
+.icon-rt {
+    font-size: 1.5rem;
+}
+
+.icon-dn, .icon-up {
+    font-size: 0.5rem;
+    padding-left: 0.25rem;
+}
+
+
+/*
+ * side bar dropdowns
+ */
+
+.dropdown-container {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+
+/*
+ *
+ *Cencus tract Css
+ *
+ */
+
+.tract {
+  stroke: #0E213D;
+  fill-opacity: 0.5;
+  stroke-dasharray: 2,2; 
+  stroke-width: 0.5; 
+    /* Note! Tract fill color is set by 
+     * local moran's I value, 
+     * see tracts.js script   */
+}
+
+/*
+ *
+ * school markers
+ * and marker clusters
+ *
+ */
+
+
+/* school markers  */
+.school-marker {
+   color: #f03b20; 
+}
+.school-marker.sm {
+   color: var(--main-sch-color-sm); 
+}
+.school-marker.md {
+   color: var(--main-sch-color-md); 
+}
+.school-marker.lg {
+   color: var(--main-sch-color-lg); 
+}
+
+/* school marker clusters */
+.marker-cluster-small {
+    background-color: var(--main-sch-color-sm-bk2); 
+}
+.marker-cluster-small div{
+    background-color: var(--main-sch-color-sm-bk1);
+}
+.marker-cluster-medium {
+    background-color: var(--main-sch-color-md-bk2); 
+}
+.marker-cluster-medium div{
+    background-color: var(--main-sch-color-md-bk1);
+}
+.marker-cluster-large {
+    background-color: var(--main-sch-color-lg-bk2); 
+}
+.marker-cluster-large div{
+    background-color: var(--main-sch-color-lg-bk1);
+}
+
+
+.poly-style:not(.tract) {
+  stroke: green;
+  fill: none;
+  stroke-dasharray: 10,10; 
+  stroke-width: 5; 
+}
+
+
+
+/* 
+multi hue
+#ffeda0
+#feb24c
+#f03b20
+single hue
+#fee6ce
+#fdae6b
+#e6550d
+*/
+ 
+/* UTSA colors:
+ * https://imagecolorpicker.com/en
+ * https://www.utsa.edu/
+ * http://colorbrewer2.org/#type=sequential&scheme=YlOrRd&n=9
+ * blue - #0E213D
+ * orange - #DE3E1A
+ */

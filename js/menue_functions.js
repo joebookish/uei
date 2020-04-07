@@ -10,7 +10,8 @@ function updateYear(geojson,markers){
     updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear);
     
     //disable update year button
-    document.getElementById("updateYear").disabled = true;
+    var yrbutton = document.getElementById("updateYear"); 
+    yrbutton.disabled = true;
     
     updateTractYear(geojson,dYear);
     updateSchoolsYear(markers,dYear);
@@ -34,11 +35,12 @@ function yearDisplay(){
 
 function sliderHTML(){
     var start_year = 2000;
-    loader = '<div><p><label id="dYear">displayed year: '+start_year+'</label>' +
-             '<input type="range" id="fromYear" value="' + start_year + '" min="2000" step="1" max="2015"' + 
+    loader = '<div class="level-item title is-1" id="dYear">displayed year: '+start_year+'</div>' +
+             '<input type="range" id="fromYear" class="level-item" value="' + start_year + '" min="2000" step="1" max="2015"' + 
                     'oninput=yearDisplay()>' +
-                '<label id="fYear">' + start_year + '</label></p>' +
-            '<p><button id="updateYear" disabled >change displayed year</button></p></div>';
+            '<button id="updateYear" class="button level-item is-small" disabled >'+
+            'change to<label for="fromYear" id="fYear">' + start_year +'</label>' +
+            '</button>';
     return loader;
 }
 
@@ -80,7 +82,7 @@ function schoolCheckboxSectionHTML(schoolOptions){
 
 function schoolCheckboxHTML(item,index){
     var temp_loader =  
-    '<label><input type="radio" name="school-display-data" class="leaflet-control-school-selector" value="' +
+    '<label class="level-item"><input type="radio" name="school-display-data" class="leaflet-control-school-selector" value="' +
     item.variable +
     '" name="' +
     item.name +
@@ -154,8 +156,8 @@ function moranCheckboxSectionHTML(dataOptions){
     var loaderHTML = ""; 
     
     loader.forEach(function (item,index){
-        loaderHTML += '<div><button class="dropdown"><span>'+ section[index] 
-                    + '</span><span class=“icon-L-arrow”></span>'
+        loaderHTML += '<div><button class="dropdown level-item button is-light is-fullwidth"><span>'+ section[index] 
+                    + '</span><span class="icon-dn"></span>'
                     +'</button><div class="dropdown-container">' 
                     + item + '</div></div>';
     });
@@ -165,7 +167,7 @@ function moranCheckboxSectionHTML(dataOptions){
 
 function moranCheckboxHTML(item,index){
     var temp_loader =  
-    '<label><input type="checkbox" class="leaflet-control-moran-selector" value="' +
+    '<label class="level-item"><input type="checkbox" class="leaflet-control-moran-selector" value="' +
     item.variable.slice(0,-1) +
     '" name="' +
     item.name +

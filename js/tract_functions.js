@@ -7,6 +7,9 @@
 function tractMoranRange(){
 
     return [
+        { value: "NA",
+          color: '#00000000'
+        },
         { value: 0.9,
           color: '#fff7fb'
         }, 
@@ -53,10 +56,10 @@ function getColor(d) {
     return match_color;
 }
 
-function colorTracts(mdata){
+function colorTracts(mdata, weight_matrix){
         
     var moran_variables = readMoran();
-    moranRun(mdata,moran_variables.val);
+    moranRun(mdata,moran_variables.val,weight_matrix);
 
     function style(layer) {
         layer.setStyle({
@@ -76,15 +79,16 @@ function colorTracts(mdata){
 
 /*
  *
- * Update the tract and weight matrix
+ * Update the tract, weight matrix,
+ * and morans_i_sd_year data
  * for a new year selection
  *
  */
 
 
 function updateTractYear(geojson,year){
-    var jsonFile = "data/geo_0000.geojson"; 
-    var weightMatrix = "data/weight_matrix_2000.json"; 
+    var jsonFile = "data_prod/geo_0000.geojson"; 
+    var weightMatrix = "data_prod/weight_matrix_2000.json"; 
     jsonFile = jsonFile.replace(/\d+/g,year);
     weightMatrix = weightMatrix.replace(/\d+/g,year);
     
@@ -97,7 +101,7 @@ function updateTractYear(geojson,year){
             weight_matrix = wmdata;
 
             var newGeojson = L.geoJson(mdata,{});
-            newGeojson.eachLayer(colorTracts(mdata));
+            newGeojson.eachLayer(colorTracts(mdata,weight_matrix));
             geojson.clearLayers();
             newGeojson.eachLayer(function(layer){
                 geojson.addLayer(layer);

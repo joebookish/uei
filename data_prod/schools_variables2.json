@@ -1,0 +1,26 @@
+[
+  {
+    "variable": "names",
+    "name": "the school name"
+  },
+  {
+    "variable": "district_g9",
+    "name": "school district"
+  },
+  {
+    "variable": "size",
+    "name": "number of students in freshman class cohort"
+  },
+  {
+    "variable": "ps_enroll_t5",
+    "name": "number of students enrolled in two or four year college"
+  },
+  {
+    "variable": "grad12_ba",
+    "name": "number of students who graduate with a bachelor's degree"
+  },
+  {
+    "variable": "hsgrad_4",
+    "name": "precent of freshman cohort that graduates from college in 4 years"
+  }
+]

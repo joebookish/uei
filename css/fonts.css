@@ -1,0 +1,69 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?7t1w5b');
+  src:  url('fonts/icomoon.eot?7t1w5b#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?7t1w5b') format('truetype'),
+    url('fonts/icomoon.woff?7t1w5b') format('woff'),
+    url('fonts/icomoon.svg?7t1w5b#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-up:before {
+  content: "\e903";
+}
+.icon-rt:before {
+  content: "\e904";
+}
+.icon-dn:before {
+  content: "\e905";
+}
+.icon-school_2:before {
+  content: "\e900";
+}
+.icon-gear:before {
+  content: "\e902";
+}
+.icon-key_2:before {
+  content: "\e901";
+}
+.icon-plus:before {
+  content: "\ea0a";
+}
+.icon-minus:before {
+  content: "\ea0b";
+}
+.icon-info:before {
+  content: "\ea0c";
+}
+.icon-cross:before {
+  content: "\ea0f";
+}
+.icon-checkbox-checked:before {
+  content: "\ea52";
+}
+.icon-checkbox-unchecked:before {
+  content: "\ea53";
+}
+.icon-radio-checked2:before {
+  content: "\ea55";
+}
+.icon-radio-unchecked:before {
+  content: "\ea56";
+}

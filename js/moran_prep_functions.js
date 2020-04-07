@@ -1,12 +1,7 @@
-function moranRun(mdata,moran_variables){
-    //dataset - is a vector set used to calculate the Moran's eye
-    //mdata.features is the geospatial data    
+function moranRun(mdata,moran_variables, weight_matrix){
     
-    var dataset = generateDataset(mdata,moran_variables);
-    var geospatial = extractGeospatial(mdata);
-    
-    var moran_vector =  moranTemp(dataset,geospatial);
-   
+    var moran_vector =  moranI(mdata,weight_matrix);
+
     setMoranProp(mdata,moran_vector);
 
     return moran_vector;
