@@ -80,10 +80,18 @@ label > span {
  * 
  */
 
+/*
 .icon-school:before {
     -webkit-text-stroke: 1.5px black;
     font-size: 3rem;
     content: "\e900";
+}
+*/
+
+.icon-school:before {
+    -webkit-text-stroke: 1px black;
+    font-size: inherit;
+    content: "\ea1e";
 }
 
 .icon-plus, .icon-minus {
@@ -147,12 +155,15 @@ label > span {
 }
 .school-marker.sm {
    color: var(--main-sch-color-sm); 
+   font-size: 2rem;
 }
 .school-marker.md {
    color: var(--main-sch-color-md); 
+   font-size: 2.5rem;
 }
 .school-marker.lg {
    color: var(--main-sch-color-lg); 
+   font-size: 3rem;
 }
 
 /* school marker clusters */
@@ -175,6 +186,10 @@ label > span {
     background-color: var(--main-sch-color-lg-bk1);
 }
 
+.marker-cluster {
+    color: black;
+    font-size: 1rem;
+}
 
 .poly-style:not(.tract) {
   stroke: green;

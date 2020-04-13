@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="css/leaflet.css">
     <link rel="stylesheet" type="text/css" href="css/leaflet-sidebar.min.css">
-    <link rel="stylesheet" type="text/css" href="static/leaflet.markercluster-1.1.0/dist/markercluster.default.css">
-    <link rel="stylesheet" type="text/css" href="static/leaflet.markercluster-1.1.0/dist/markercluster.css">
+    <link rel="stylesheet" type="text/css" href="css/markercluster.default.css">
+    <link rel="stylesheet" type="text/css" href="css/markercluster.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/fonts.css">
  
@@ -60,6 +60,56 @@
                 </div>
               </div>
             </section>
+            <section class="section">
+                <div class="level" id="tracts-key" name="key-for-cencus-tracts">
+                    <div class="level-item">
+<svg pointer-events="none" width="110" height="85" viewBox="0 0 110 85" style="transform:translate3d(0px, 0px, 0px);">
+<path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#023858" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
+</svg>
+                    </div>
+                   <div class="level-item">
+                       <span>census tract</span>
+                    </div>
+                </div>
+                <div class="level" id="schools-key" name="key-for-schools">
+                    <div class="level">
+                        <div class="level-item-left">
+                            <div class="leaflet-marker-icon marker-cluster marker-cluster-large"  style="position: relative; width: 40px; height: 40px; opacity: 1;">
+                                <div style="position: absolute;">
+                                    <span>#</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="level-item-right">
+                            <span>cluster of high schools, # number of schools in cluster</span>
+                        </div>
+                    </div>
+                    <div class="level">
+                        <div class="leaflet-marker-icon school-marker sm leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;">
+                            <span class="icon-school"></span>
+                        </div>
+                        <div class="level-item-right">
+                            <span>cluster of high schools, # number of schools in cluster</span>
+                        </div>
+                    </div>
+                    <div class="level">
+                        <div class="leaflet-marker-icon school-marker md leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;">
+                            <span class="icon-school"></span>
+                        </div>
+                        <div class="level-item-right">
+                            <span>cluster of high schools, # number of schools in cluster</span>
+                        </div>
+                    </div>
+                    <div class="level">
+                        <div class="leaflet-marker-icon school-marker lg leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;">
+                            <span class="icon-school"></span>
+                        </div>
+                        <div class="level-item-right">
+                            <span>cluster of high schools, # number of schools in cluster</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
               
               <!-- key selects to this id  -->
               <span id="key"></span>
@@ -87,7 +137,7 @@
     <script src='js/jquery-3.4.1.min.js'></script>
     <script src='js/leaflet.js'></script>
     <script src="js/leaflet-sidebar.min.js"></script>
-    <script src="static/Leaflet.markercluster-1.1.0/dist/leaflet.markercluster-src.js"></script>
+    <script src="js/leaflet.markercluster-src.js"></script>
     <script src="js/moran_prep_functions.js"></script>
     <script src="js/moran_functions.js"></script>
     <script src="js/school_functions.js"></script>
