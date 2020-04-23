@@ -33,19 +33,6 @@ function yearDisplay(){
 
 }
 
-function sliderHTML(){
-    var start_year = 2000;
-    loader = '<div class="level-item title is-1" id="dYear">displayed year: '+start_year+'</div>' +
-             '<input type="range" id="fromYear" class="level-item" value="' + start_year + '" min="2000" step="1" max="2015"' + 
-                    'oninput=yearDisplay()>' +
-            '<button id="updateYear" class="button level-item is-small" disabled >'+
-            'change to<label for="fromYear" id="fYear">' + start_year +'</label>' +
-            '</button>';
-    return loader;
-}
-
-
-
 /*
  *
  * Schools Toggle Setup
@@ -133,6 +120,13 @@ function readMoran(checked = true){
             moran_variables.val.push($(this).val());
         });
     }
+
+    //default values html has not rendered 
+    if(moran_variables.val.length == 0){
+        moran_variables.val = ["DP02_0058","DP02_0061"];
+        moran_variables.name = ["Population 25 years and over","High school graduate (includes equivalency)"];
+    }
+
     return moran_variables;
 }
 
@@ -156,9 +150,9 @@ function moranCheckboxSectionHTML(dataOptions){
     var loaderHTML = ""; 
     
     loader.forEach(function (item,index){
-        loaderHTML += '<div><button class="dropdown level-item button is-light is-fullwidth"><span>'+ section[index] 
-                    + '</span><span class="icon-dn"></span>'
-                    +'</button><div class="dropdown-container">' 
+        loaderHTML += '<div><div class="dropdown" onclick="MdropDown(this)">'+ section[index] 
+                    + '<span class="icon-dn"></span>'
+                    +'</div><div class="dropdown-container">' 
                     + item + '</div></div>';
     });
     
@@ -167,7 +161,7 @@ function moranCheckboxSectionHTML(dataOptions){
 
 function moranCheckboxHTML(item,index){
     var temp_loader =  
-    '<label class="level-item"><input type="checkbox" class="leaflet-control-moran-selector" value="' +
+    '<label class="level-item"><input type="checkbox" onchange=checkMoranVarCount(this) class="leaflet-control-moran-selector" value="' +
     item.variable.slice(0,-1) +
     '" name="' +
     item.name +
@@ -178,27 +172,92 @@ function moranCheckboxHTML(item,index){
     return temp_loader;
 }
 
-function moranCheckboxSetup(){
-    var limit = 5;
+// disable checkboxes 
+function disableMoranChecks(mdata){
+    // disable checkboxes 
+    // for years when data is not availble
+    definedMoranVars = checkTractVarvsMoran(mdata);
+    var checkBoxes = document.querySelectorAll(".leaflet-control-moran-selector");
     
-    // check the first boxes within limit
-    for(i=0;i<limit;i++){
-        $('input.leaflet-control-moran-selector').eq(i).prop('checked',true)
+    for(var i=0;i<checkBoxes.length;i++){
+        checkBoxes[i].disabled = false;
+        if(definedMoranVars[i]){
+            checkBoxes[i].disabled = true;
+            checkBoxes[i],checked = false;
+        }     
     }
-    // limit number of checks
-    $('input.leaflet-control-moran-selector').on('change', function(evt) {
-        if($('input.leaflet-control-moran-selector:checked').length > limit) {
-            this.checked = false;
-            alert("only "+limit+" variables may be chosen at once")
-        }
+}
+
+function checkMoranVarCount(checkthis){
+    // allow only 5 
+    // variables at once
+    var limit = 5; 
+    var checkcount = 0;
+    var checkBoxes = document.querySelectorAll(".leaflet-control-moran-selector");
+    disableMoranChecks(mdata);
+
+    for(var i=0;i<checkBoxes.length;i++){
+       if(checkBoxes[i].checked == true){
+           checkcount++;
+           if(checkcount > limit){
+               checkthis.checked = false;
+               checkBoxes.forEach(function(e){
+                   if(e.checked == false){
+                        e.disabled = true;
+                   }
+               });
+               alert("only "+limit+" variables may be chosen at once");
+               break;
+           }
+       } 
+    }
+}
+
+/*
+ *
+ * Key  
+ *
+ */
+//tracts
+function TractScaleHTML(){
+    
+    var colors = tractMoranRange();
+    var swatchHtml = ""; 
+    var temp = "temp range value";
+    colors.forEach(function(color){
+        swatchHtml += '<div class="level-item" id="color-' + color.value 
+            +'"><svg width="50" height="50"><rect width="50" height="50" class="tract" stroke="#3388ff"'  
+            + ' stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="' + color.color 
+            +'" fill-opacity="0.2"/></svg><span id="name-'+ color.value +'">'+ temp
+            +'</span></div>';
     });
+
+    return swatchHtml;
+}
+
+function TractColorScale(){
+    
+    document.querySelector("#tract_color_scale").innerHTML = TractScaleHTML();
+    return "this worked";
 }
 
 
-
 /*
+ *
  * general 
+ *
  */
+
+//dropdown
+function MdropDown(e){
+    var dropdn = e.nextSibling.style.display;
+    if(dropdn != "block"){
+        e.nextSibling.style.display = "block";
+    } else {
+        e.nextSibling.style.display = "none";
+    }
+}
+
 
 function addGeojsonProp(geojson,prop){
     geojson.features.forEach(function(feature){

@@ -1,6 +1,6 @@
 //global variables for testing
-var weight_matrix;
-var dataOptions, schoolOptions, schools, school_sizes, data;
+var weight_matrix, morans_i_sd, morans_i_mean;
+var dataOptions, schoolOptions, schools, mdata;
 var map, geojson;
 var mapOptions, basemaps, overlays;
 var markers, layerControl;
@@ -10,45 +10,47 @@ uei_base();
 
 // load mdata
 $.when(
-    $.when(
-        $.getJSON("data_prod/geo_2000.geojson", function(data) {
-            mdata = data;
-        }),
-        $.getJSON("data_prod/weight_matrix_2000.json", function(data){
-            weight_matrix = data;
-        }),
-        $.getJSON("data_prod/acs5_variables.json", function(data){
-            dataOptions = data;
-        })
+    $.getJSON("data_prod/geo_2000.geojson", function(data) {
+        mdata = data;
+    }),
+    $.getJSON("data_prod/weight_matrix_2000.json", function(data){
+        weight_matrix = data;
+    }),
+    $.getJSON("data_prod/morans_i_sd.json", function(data){
+        morans_i_sd = data;
+        morans_i_sd_year = morans_i_sd.filter(e => e.year == "2000");
+    })
 
-    ).then(load_tracts_setup)
-     .then(census_controller_setup),
+).then(load_tracts_setup);
+
+// load schools data
+$.when(
+    $.getJSON("data_prod/schools_2000.json",function(data) {
+        schools = data;
+    })
+
+).then(load_schools_setup);
+
+sidebar_menu_setup();
+year_controller_setup();
+
+//load the tracts data display options
+$.when(
+    $.getJSON("data_prod/acs5_variables.json", function(data){
+        dataOptions = data;
+    })
+ 
+).then(census_controller_setup);
+
+//load the school data display options
+$.when(
+    $.getJSON("data_prod/schools_variables2.json",function(data) {
+        schoolOptions = data;
+    })   
     
-    // load schools data
-    $.when(
-        $.getJSON("data_prod/schools_2000.json",function(data) {
-            schools = data;
-        })
+).then(school_controller_setup)
+ .then(style_js);
 
-    ).then(load_schools_setup),
-
-    sidebar_menu_setup(),
-    year_controller_setup(),
-
-    //load the school data display options
-    $.when(
-        $.getJSON("data_prod/schools_variables2.json",function(data) {
-            schoolOptions = data;
-        }),   
-       $.getJSON("data_prod/school_sizes.json",function(data) {
-            school_sizes = data;
-        })   
-        
-    ).then(school_controller_setup)
-     
-).then(layer_controller_setup)
- .then(key_setup)
- .then(remove_loading_screen);
 
 /*
  *
@@ -177,15 +179,22 @@ function layer_controller_setup(){
      * Layer Controller 
      *
      */
-       
+        
+        // setup Layer and Year Controller div
+        $(".leaflet-control-layers-list").addClass("section")
+        $(".leaflet-control-layers-list").prepend('<div id="control-wrap" class="level"></div>');
+        
         // add Layer Control for tracts and school
         layerControl.addOverlay(geojson, "census tracts");
         layerControl.addOverlay(markers, "high schools");
+        // remove Layer Control base map toggle
+        $(".leaflet-control-layers-base").remove();
+        $(".leaflet-control-layers-separator").remove();
 
         // move tracts and school controlls to new location
+        $("#control-wrap").prepend("<div id='layer-layer-control'><div class='level-item title is-1'>displayed data:</div></div>");
         var temp_overlays = $(".leaflet-control-layers-overlays").remove()
-        $('#layercontrol').after(temp_overlays);
-        $('#layercontrol').remove()
+        $('#layer-layer-control').append(temp_overlays);
 
 
 }
@@ -198,6 +207,10 @@ function year_controller_setup(){
      * Year Controller 
      *
      */
+        // year controller
+        var loader = sliderHTML();
+        $('#control-wrap').prepend('<div class="leaflet-control-layers-year">' +
+                loader + '</div>');
         // set update year function
         $('#updateYear').click(function(){
             updateYear(geojson,markers);
@@ -214,13 +227,15 @@ function school_controller_setup(){
      * School Controller
      *
      */
+        // school features controller 
+        $("#control-wrap").after("<div class='control level leaflet-control-layers-school' id='schools'><strong class='title is-1 level-item'>student outcomes</strong></div>");
 
         var sloader = schoolCheckboxSectionHTML(schoolOptions);
-        $('#school_data').html(sloader);
+        $('strong:contains("student")').after(sloader);
         
 
         // set toggle schools function
-        $('#school_data').change(function(){
+        $('.leaflet-control-layers-school').change(function(){
             updateSchoolsPopup(markers,schools);
         });
 
@@ -235,34 +250,29 @@ function census_controller_setup(){
      * Census Tract Controller
      *
      */
-        var tloader = moranCheckboxSectionHTML(dataOptions);
-        $('#tract_features').html(tloader);
-        
-        // check moran variables in checkbox menu
-        // see readMoran for default values
-        var moran_variables = readMoran();
-        moran_variables.name.forEach(function(mvname){
-            document.querySelector('[name="' + mvname + '"]').checked = true; 
-        });
+        // census tract features controller, controls moran inpu variables 
+        $("#schools").after("<div class='control level' id='tracts'><strong class='title is-1 level-item'>census tract features</strong></div>");
 
+        var tloader = moranCheckboxSectionHTML(dataOptions);
+        
+        var tbutton = '<button id="run_moran" class="button level-item" type="button">update features</button>'
+        $('strong:contains("census tract")').after(tloader + tbutton);
+        
+        // pre check moran variables for load and set javascript altert 
+        moranCheckboxSetup();
         disableMoranChecks(mdata);
+
+        // load tract colors
+        $().ready(function(){
+            // add event listeners to Moran checkbox sections
+            collapseVars();   
+            geojson.eachLayer(colorTracts(mdata));
+        });
 
         // set run moran function
         $('#run_moran').click(function(){
             geojson.eachLayer(colorTracts(mdata));
         });
 
-
-}
-
-// key setup
-function key_setup(){
-    TractColorScale();
-}
-
-//remove loading screen
-function remove_loading_screen(){
-    
-    $('#loadingId').remove();
 
 }

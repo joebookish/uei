@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>leaflet js customisation demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="css/leaflet.css">
     <link rel="stylesheet" type="text/css" href="css/leaflet-sidebar.min.css">
     <link rel="stylesheet" type="text/css" href="css/markercluster.default.css">
@@ -15,6 +14,13 @@
   </head>
   <body>
 
+    <!-- loading image -->
+    <div id="loadingId" class="loadingClass">
+       <span class="loadingText"> Loading </span>
+       <span class ="icon-gear loadingIconMd"></span>
+       <span class ="icon-gear loadingIconLg"></span>
+       <span class ="icon-gear loadingIconSm"></span>
+    </div>
     <div id="sidebar" class="sidebar collapsed">
       <!-- nav tabs -->
       <div class="sidebar-tabs">
@@ -48,10 +54,33 @@
               </div>
             </section>
               
-              <!-- Control Layers selects to this id  -->
-              <span id="layercontrol"></span>
+              <!-- Control tab content  -->
+              <section id="year_control" name="year controller">
+                 <div class=title id="dYear">displayed year: 2000</div>
+                 <input type="range" id="fromYear" class="level-item" value="2000" min="2000" step="1" max="2015" oninput=yearDisplay()>
+                 <button id="updateYear" class="button level-item is-small" disabled ><label for="fromYear" id="fYear">2000</label></button>
+              </section>
+              <section id="layer-layer-control" name="map layer controller">
+                 <div class=title>displayed data</div>
+                 <span id="layercontrol"></span>
+              </section>
+              <section name="student outcomes data controller">
+                 <div class=title>student outcomes</div>
+                 <div id="school_data"></div>
+              </section>
+             <section name="tract variables">
+                 <div class=title>census tract features</div>
+                 <div id="tract_features"></div> 
+                 <button id="run_moran" class="button level-item" type="button">update features</button>
+              </section>
+
+
+              <!-- Control selects to this id  -->
+              <span id="control"></span>
+
           </div>
 
+              <!-- Key tab content  -->
         <div class="sidebar-pane" id="mkey">
            <section class="hero">
               <div class="hero-body">
@@ -64,11 +93,13 @@
                 <div class="level" id="tracts-key" name="key-for-cencus-tracts">
                     <div class="level-item">
 <svg pointer-events="none" width="110" height="85" viewBox="0 0 110 85" style="transform:translate3d(0px, 0px, 0px);">
-<path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#023858" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
+<path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#74a9cf" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
 </svg>
                     </div>
-                   <div class="level-item">
+                    <div class="level-item">
                        <span>census tract</span>
+                    </div>
+                    <div id="tract_color_scale" name="tract color scale" class="level level-item">
                     </div>
                 </div>
                 <div class="level" id="schools-key" name="key-for-schools">
@@ -115,6 +146,9 @@
               <span id="key"></span>
           </div>
 
+
+
+        <!-- Info tab content -->
         <div class="sidebar-pane" id="minfo">
            <section class="hero">
               <div class="hero-body">
@@ -143,7 +177,6 @@
     <script src="js/school_functions.js"></script>
     <script src="js/tract_functions.js"></script>
     <script src="js/menue_functions.js"></script>
-    <script src="js/style.js"></script>
     <script src="js/main_map.js"></script>
   </body>
 </html>

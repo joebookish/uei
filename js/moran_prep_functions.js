@@ -1,24 +1,29 @@
 function moranRun(mdata,moran_variables, weight_matrix){
     
-    var moran_vector =  moranI(mdata,weight_matrix);
+    var moran_Is =  moranI(mdata,weight_matrix);
 
-    setMoranProp(mdata,moran_vector);
+    setMoranProp(mdata,moran_Is);
 
-    return moran_vector;
+    return moran_Is;
     //return [dataset,geospatial,adjlist];
     //return CalcLMI(dataset,geospatial,adjlist,true);
 }
 
-function setMoranProp(data, moran_vector){
-    if(isPropSet(data,"moran").some(element => element === false)){
+function setMoranProp(data, moran_Is){
+    if(isPropSet(data,"moran_stat").some(element => element === false)){
+        addGeojsonProp(data,"moran_stat");       
+    }
+
+   if(isPropSet(data,"moran").some(element => element === false)){
         addGeojsonProp(data,"moran");       
     }
 
     data.features.forEach(function(feature, index){
-        feature.properties.moran = moran_vector[index];
+        feature.properties.moran = moran_Is.values[index];
+        feature.properties.moran_stat = moran_Is.stat_labels[index];
     });
 
-    return "the moran vector assigned " + moran_vector.toString();
+    return "the moran vector assigned " + moran_Is.toString();
     
 }
 
