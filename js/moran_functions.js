@@ -66,10 +66,12 @@ function moranI(mdata){
     console.log("max: ",max);
     console.log("min: ", min);
     console.log(moran_vector);
-    var statLabels = calcStatsLabel(moran_vector);
+    var stats = calcStats(moran_vector); 
+    var statLabels = calcStatsLabel(moran_vector,stats);
     return { 
         "values": moran_vector,
-        "stat_labels": statLabels};
+        "stat_labels": statLabels,
+        "stat": stats};
 }
 
 //Step 2 and call for Step 1
@@ -192,10 +194,9 @@ function average(data){
 }
 
 // Calculated stats label from stats
-function calcStatsLabel(moran_vector){
+function calcStatsLabel(moran_vector, stats){
     var mvstats = [];
 
-    var stats = calcStats(moran_vector);
     moran_vector.forEach(function(moran){
         if(moran < stats.lower_maj_outlier){
             mvstats.push(["lmaj",1]);

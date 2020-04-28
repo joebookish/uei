@@ -19,15 +19,29 @@ function schoolSizeRange(){
      * large > 1230
      */   
 
-    return {
-        sm_max: 50, 
-        md_max: 500 
-    };
+   return [
+        {
+            cs_class: "small",
+            value: 357,
+            text: "less than 357"
+        }, 
+        {
+            cs_class: "medium",
+            value: 631,
+            text: "greater than or equal to 357, less than or equal to 631"
+        },
+        {
+            cs_class: "large",
+            value: 0,
+            text: "greater than 631"
+        }
+    ];
 
 }
 
 function sizeClusterIconCreate(schools){
     var temp_fun = function (cluster) {
+        var mscale = schoolSizeRange();
         var childCount = cluster.getChildCount();
         var markers = cluster.getAllChildMarkers();
         var studentCount = 0; 
@@ -37,12 +51,12 @@ function sizeClusterIconCreate(schools){
         });
 
         var c = ' marker-cluster-';
-        if (studentCount < schoolSizeRange().sm_max) {
-            c += 'small';
-        } else if (studentCount < schoolSizeRange().md_max) {
-            c += 'medium';
+        if (studentCount < mscale[0].value) {
+            c += mscale[0].cs_class;
+        } else if (mscale[0].value <= studentCount && studentCount <= mscale[1].value) {
+            c += mscale[1].cs_class;
         } else {
-            c += 'large';
+            c += mscale[2].cs_class;
         }
         return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
     }
@@ -53,6 +67,7 @@ function sizeClusterIconCreate(schools){
 function makeSchoolMarkers(schools,markers){
     
     schools.forEach(function(e){
+        //var title = e.campname_g9;
         var title = e.names;
         var marker = L.marker([e.lat, e.lon], { 
             title: title,
@@ -85,14 +100,15 @@ function schoolicon(e){
 function getUILclass(size){
 
     var temp_class = 'school-marker';
-    if(size < schoolSizeRange().sm_max) {
-        temp_class += ' sm';
+    var mscale = schoolSizeRange();
+    if(size < mscale[0].value) {
+        temp_class += " " + mscale[0].cs_class;
     
-    }else if(size < schoolSizeRange().md_max){
-        temp_class += ' md';
+    }else if(mscale[0].value <= size && size <= mscale[1].value){
+        temp_class += " " + mscale[1].cs_class;
     
     }else {
-        temp_class += ' lg';
+        temp_class += " " + mscale[2].cs_class;
     } 
 
     return temp_class;

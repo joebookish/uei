@@ -1,6 +1,6 @@
 //global variables for testing
 var weight_matrix;
-var dataOptions, schoolOptions, schools, school_sizes, data;
+var dataOptions, schoolOptions, schools, data;
 var map, geojson;
 var mapOptions, basemaps, overlays;
 var markers, layerControl;
@@ -39,9 +39,6 @@ $.when(
     $.when(
         $.getJSON("data_prod/schools_variables2.json",function(data) {
             schoolOptions = data;
-        }),   
-       $.getJSON("data_prod/school_sizes.json",function(data) {
-            school_sizes = data;
         })   
         
     ).then(school_controller_setup)
@@ -257,7 +254,7 @@ function census_controller_setup(){
 
 // key setup
 function key_setup(){
-    TractColorScale();
+    SchoolColorScale();
 }
 
 //remove loading screen

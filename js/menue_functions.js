@@ -219,29 +219,46 @@ function checkMoranVarCount(checkthis){
  *
  */
 //tracts
-function TractScaleHTML(){
+function TractScaleHTML(colors){
     
-    var colors = tractMoranRange();
     var swatchHtml = ""; 
     var temp = "temp range value";
     colors.forEach(function(color){
         swatchHtml += '<div class="level-item" id="color-' + color.value 
             +'"><svg width="50" height="50"><rect width="50" height="50" class="tract" stroke="#3388ff"'  
             + ' stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="' + color.color 
-            +'" fill-opacity="0.2"/></svg><span id="name-'+ color.value +'">'+ temp
+            +'" fill-opacity="0.2"/></svg><span id="name-'+ color.value +'">'+ color.text
             +'</span></div>';
     });
 
     return swatchHtml;
 }
 
-function TractColorScale(){
+function TractColorScale(colors){
     
-    document.querySelector("#tract_color_scale").innerHTML = TractScaleHTML();
+    document.querySelector("#tract_color_scale").innerHTML = TractScaleHTML(colors);
     return "this worked";
 }
 
+// schools
+function SchoolScaleHTML(){
+    var srange = schoolSizeRange();
+    var temp = "temp text";
+    var markerHtml = '';
+    
+    srange.forEach(function(range){
+        markerHtml += '<div class="level"> <div class="leaflet-marker-icon school-marker ' + range.cs_class + ' leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;"><span class="icon-school"></span></div><div class="level-item-right"><span>'+ range.text + '</span></div></div>'
 
+    });
+    
+    return markerHtml;
+}
+
+function SchoolColorScale(){
+    
+    document.querySelector("#school_color_scale").innerHTML = SchoolScaleHTML();
+    return "this worked";
+}
 /*
  *
  * general 

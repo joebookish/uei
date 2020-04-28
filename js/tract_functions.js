@@ -4,26 +4,39 @@
  *
  *
  */
-function tractMoranRange(){
-
+function tractMoranRange(stat = 1){
+    if(stat == 1){
+        stat = {
+            lower_maj_outlier: 0,
+            lower_min_outlier: 0,
+            upper_min_outlier: 0,
+            upper_maj_outlier: 0
+        };
+    }
     return [
         { value: 1,
-          color: '#fff7fb'
+          color: '#fff7fb',
+          text: 'less than '+ stat.lower_maj_outlier
         }, 
         { value: 2,
-          color: '#ece7f2'
+          color: '#ece7f2',
+          text: 'greater than or equal to ' + stat.lower_maj_outlier + ', less than ' + stat.lower_min_outlier
         },        
         { value: 3,
-          color: '#74a9cf'
+          color: '#74a9cf',
+          text: 'greater than or equal to ' + stat.lower_min_outlier + ', less than or equal to ' + stat.upper_min_outlier
         },        
         { value: 4,
-          color: '#045a8d'
+          color: '#045a8d',
+          text: 'greater than' + stat.upper_min_outlier + ', less than or equal to ' + stat.upper_maj_outlier
         },        
         { value: 5,
-          color: '#023858'
+          color: '#023858',
+          text: 'greater than ' + stat.upper_maj_outlier 
         },
         { value: NaN,
-          color: '#808080'
+          color: '#808080',
+          text: 'no data'
         }
    ];
 
