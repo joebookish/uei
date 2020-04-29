@@ -134,23 +134,27 @@ function updateTractYear(geojson,year){
     var weightMatrix = "data_prod/weight_matrix_2000.json"; 
     jsonFile = jsonFile.replace(/\d+/g,year);
     weightMatrix = weightMatrix.replace(/\d+/g,year);
-
-    $.getJSON(jsonFile, function(data) {
-       addGeojsonProp(data,"moran");
-       mdata = data;
-       disableMoranChecks(mdata);
     
-       $.getJSON(weightMatrix, function(wmdata){
-            weight_matrix = wmdata;
+    var p_wait = Promise.all([jsonFile,weightMatrix].map(getJSON));
 
-            var newGeojson = L.geoJson(mdata,{});
-            newGeojson.eachLayer(colorTracts(mdata,weight_matrix));
-            geojson.clearLayers();
-            newGeojson.eachLayer(function(layer){
-                geojson.addLayer(layer);
-            });
-       });
+    p_wait.then(function(data){
+        mdata = data[0];
+        console.log(mdata);
+        weight_matrix = data [1];
+       
+        addGeojsonProp(mdata,"moran");
+        disableMoranChecks(mdata);
+
+        var newGeojson = L.geoJson(mdata,{});
+
+        newGeojson.eachLayer(colorTracts(mdata,weight_matrix));
+        geojson.clearLayers();
+        newGeojson.eachLayer(function(layer){
+            geojson.addLayer(layer);
+        });
+   
     });
+    
 }
 
 

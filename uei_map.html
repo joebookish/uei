@@ -47,11 +47,9 @@
       <div class="sidebar-content">
         <div class="sidebar-pane" id="mcontrols">
            <section class="hero">
-              <div class="hero-body">
                 <div class="container sidebar-close">
                   <h1 class="title"><span class="icon-rt"></span> Controls</h1>
                 </div>
-              </div>
             </section>
               
               <!-- Control tab content  -->
@@ -83,11 +81,9 @@
               <!-- Key tab content  -->
         <div class="sidebar-pane" id="mkey">
            <section class="hero">
-              <div class="hero-body">
                 <div class="container sidebar-close">
                   <h1 class="title"><span class="icon-rt"></span> Key</h1>
                 </div>
-              </div>
             </section>
             <section class="section">
                 <div class="level" id="tracts-key" name="key-for-cencus-tracts">
@@ -95,8 +91,6 @@
 <svg pointer-events="none" width="110" height="85" viewBox="0 0 110 85" style="transform:translate3d(0px, 0px, 0px);">
 <path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#74a9cf" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
 </svg>
-                    </div>
-                    <div class="level-item">
                        <span>census tract</span>
                     </div>
                     <div id="tract_color_scale" name="tract color scale" class="level level-item">
@@ -104,14 +98,12 @@
                 </div>
                 <div class="level" id="schools-key" name="key-for-schools">
                     <div class="level">
-                        <div class="level-item-left">
+                        <div class="level">
                             <div class="leaflet-marker-icon marker-cluster marker-cluster-large"  style="position: relative; width: 40px; height: 40px; opacity: 1;">
                                 <div style="position: absolute;">
                                     <span>#</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="level-item-right">
                             <span>cluster of high schools, # number of schools in cluster</span>
                         </div>
                     </div>
@@ -129,15 +121,19 @@
         <!-- Info tab content -->
         <div class="sidebar-pane" id="minfo">
            <section class="hero">
-              <div class="hero-body">
                 <div class="container sidebar-close">
                   <h1 class="title"><span class="icon-rt"></span> Info</h1>
                 </div>
-              </div>
             </section>
               
               <!-- info  selects to this id  -->
               <span id="info"></span>
+            <section class="section">
+                <div>
+                    This site is developed by the Urban Education Institute at the University of Texas at San Antonio. See this <a href="http://education.utsa.edu/center_urban_ed/">link</a> to more information. 
+                </div>
+            </section>
+            
           </div>
 
        </div>
@@ -146,7 +142,6 @@
 
     <div id="my-map" class="sidebar-map"></div>
 
-    <script src='js/jquery-3.4.1.min.js'></script>
     <script src='js/leaflet.js'></script>
     <script src="js/leaflet-sidebar.min.js"></script>
     <script src="js/leaflet.markercluster-src.js"></script>
@@ -155,6 +150,7 @@
     <script src="js/school_functions.js"></script>
     <script src="js/tract_functions.js"></script>
     <script src="js/menue_functions.js"></script>
+    <script src="js/requests.js"></script>
     <script src="js/main_map.js"></script>
   </body>
 </html>

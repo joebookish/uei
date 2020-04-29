@@ -105,6 +105,22 @@ body,
 
 /* Style Sidebar Elements */
 
+.level{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+}
+
+.level span{
+    padding: 0.333rem;
+    text-algin: wrap;
+}
+
+.hero {
+    padding-bottom: 1rem;
+    font-size: 1.5em;
+    padding-top: 1rem;
+}
 label { 
     padding-left: 0.25rem; 
 }
@@ -113,10 +129,6 @@ input[type=range] {
 
     padding: 0.333rem;
 
-}
-
-.level {
-    align-items: flex-start;
 }
 
 .control {

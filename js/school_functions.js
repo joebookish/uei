@@ -123,7 +123,9 @@ function getUILclass(size){
 function updateSchoolsYear(markers,year){
     var jsonFile = "data_prod/schools_2000.json"; 
     jsonFile = jsonFile.replace(/\d+/g,year);
-    $.getJSON(jsonFile, function(data) {
+
+    var p_wait = getJSON(jsonFile);
+    p_wait.then(function(data) {
        schools = data; 
    
         var newMarkers = L.markerClusterGroup({
@@ -136,7 +138,6 @@ function updateSchoolsYear(markers,year){
             markers.addLayer(layer);
         });
     });
-    
 }
 
 /*

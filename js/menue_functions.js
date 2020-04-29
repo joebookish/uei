@@ -46,11 +46,11 @@ function readSchool(){
         "name": '',
         "val":''
     };
+    
+    var selected = document.querySelectorAll("input[name='school-display-data']:checked")[0];
+    school_variable.name = selected.nextElementSibling.innerText;
+    school_variable.val = selected.value;
 
-   $("input[name='school-display-data']:checked").map(function() {
-        school_variable.name = $(this).next().text();
-        school_variable.val = $(this).val();
-    });
     return school_variable;
 }
 
@@ -110,15 +110,15 @@ function readMoran(checked = true){
         "val":[]
     };
     if(checked){
-       $("input.leaflet-control-moran-selector:checked").map(function() {
-            moran_variables.name.push($(this).attr("name"));
-            moran_variables.val.push($(this).val());
+       document.querySelectorAll("input.leaflet-control-moran-selector:checked").forEach(function(e) {
+            moran_variables.name.push(e.getAttribute("name"));
+            moran_variables.val.push(e.value);
         });
     } else {
-        $("input.leaflet-control-moran-selector").map(function() {
-            moran_variables.name.push($(this).attr("name"));
-            moran_variables.val.push($(this).val());
-        });
+        document.querySelectorAll("input.leaflet-control-moran-selector").forEach(function(e) {
+            moran_variables.name.push(e.getAttribute("name"));
+            moran_variables.val.push(e.value);
+    });
     }
 
     //default values html has not rendered 
@@ -224,7 +224,7 @@ function TractScaleHTML(colors){
     var swatchHtml = ""; 
     var temp = "temp range value";
     colors.forEach(function(color){
-        swatchHtml += '<div class="level-item" id="color-' + color.value 
+        swatchHtml += '<div class="level" id="color-' + color.value 
             +'"><svg width="50" height="50"><rect width="50" height="50" class="tract" stroke="#3388ff"'  
             + ' stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="' + color.color 
             +'" fill-opacity="0.2"/></svg><span id="name-'+ color.value +'">'+ color.text
@@ -247,7 +247,7 @@ function SchoolScaleHTML(){
     var markerHtml = '';
     
     srange.forEach(function(range){
-        markerHtml += '<div class="level"> <div class="leaflet-marker-icon school-marker ' + range.cs_class + ' leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;"><span class="icon-school"></span></div><div class="level-item-right"><span>'+ range.text + '</span></div></div>'
+        markerHtml += '<div class="level"> <div class="leaflet-marker-icon school-marker ' + range.cs_class + ' leaflet-zoom-animated leaflet-interactive" title="school marker" style="position: relative; width: 40px; height: 40px; opacity: 1;"><span class="icon-school"></span></div><span>'+ range.text + '</span></div>'
 
     });
     
