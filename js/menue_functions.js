@@ -5,9 +5,9 @@
  */
 
 function updateYear(geojson,markers){
-    var dYear = document.getElementById("fYear").innerHTML; 
+    var dYear = document.getElementById("fYear").innerText; 
     var updateDYear = document.getElementById("dYear");
-    updateDYear.innerHTML =  updateDYear.innerHTML.replace(/\d+/g,dYear);
+    updateDYear.firstElementChild.innerText =  updateDYear.innerText.replace(/\d+/g,dYear);
     
     //disable update year button
     var yrbutton = document.getElementById("updateYear"); 
@@ -20,11 +20,11 @@ function updateYear(geojson,markers){
 function yearDisplay(){
     //update the slider value
     var sliderY =  document.getElementById("fromYear").value; 
-    document.getElementById('fYear').innerHTML = sliderY;
+    document.getElementById('fYear').firstElementChild.innerText = sliderY;
    
     //check to see if the sider is different from the display year
     //disable the update year button if years are the same
-    var dYear = document.getElementById("dYear").innerHTML.match(/\d+/g)[0];
+    var dYear = document.getElementById("dYear").innerText.match(/\d+/g)[0];
     if(dYear == sliderY){
         document.getElementById("updateYear").disabled = true;
     } else {
@@ -32,6 +32,21 @@ function yearDisplay(){
     }
 
 }
+
+/*
+ *
+ * data layer control
+ *
+ */
+
+function addDLchecks() {
+    var checkboxes = document.querySelectorAll(".leaflet-control-layers-selector");
+    checkboxes.forEach(function(checkbox){
+        checkbox.insertAdjacentHTML('afterend','<span class="icon-checkbox-checked"></span><span class="icon-checkbox-unchecked"></span>');
+
+    });
+}
+
 
 /*
  *
@@ -48,7 +63,7 @@ function readSchool(){
     };
     
     var selected = document.querySelectorAll("input[name='school-display-data']:checked")[0];
-    school_variable.name = selected.nextElementSibling.innerText;
+    school_variable.name = getNextSiblings(selected,filterClassName)[0].innerText;
     school_variable.val = selected.value;
 
     return school_variable;
@@ -69,11 +84,11 @@ function schoolCheckboxSectionHTML(schoolOptions){
 
 function schoolCheckboxHTML(item,index){
     var temp_loader =  
-    '<label class="level-item"><input type="radio" name="school-display-data" class="leaflet-control-school-selector" value="' +
+    '<label class="level"><input type="radio" name="school-display-data" class="leaflet-control-school-selector" value="' +
     item.variable +
     '" name="' +
     item.name +
-    '"><span>' +
+    '"><span class="icon-radio-checked2"></span><span class="icon-radio-unchecked"></span><span class="school_name_data">' +
     item.name +
     '</span></label>';
 
@@ -104,22 +119,15 @@ function collapseVars() {
     }
 }
 
-function readMoran(checked = true){
+function readMoran(){
     var moran_variables = {
         "name": [],
         "val":[]
     };
-    if(checked){
-       document.querySelectorAll("input.leaflet-control-moran-selector:checked").forEach(function(e) {
-            moran_variables.name.push(e.getAttribute("name"));
-            moran_variables.val.push(e.value);
-        });
-    } else {
-        document.querySelectorAll("input.leaflet-control-moran-selector").forEach(function(e) {
-            moran_variables.name.push(e.getAttribute("name"));
-            moran_variables.val.push(e.value);
+   document.querySelectorAll("input.leaflet-control-moran-selector:checked").forEach(function(e) {
+        moran_variables.name.push(e.getAttribute("name"));
+        moran_variables.val.push(e.value);
     });
-    }
 
     //default values html has not rendered 
     if(moran_variables.val.length == 0){
@@ -150,9 +158,9 @@ function moranCheckboxSectionHTML(dataOptions){
     var loaderHTML = ""; 
     
     loader.forEach(function (item,index){
-        loaderHTML += '<div><div class="dropdown" onclick="MdropDown(this)">'+ section[index] 
+        loaderHTML += '<div><div class="dropdown level" onclick="MdropDown(this)">'+ section[index] 
                     + '<span class="icon-dn"></span>'
-                    +'</div><div class="dropdown-container">' 
+                    +'</div><div class="dropdown-container level stack">' 
                     + item + '</div></div>';
     });
     
@@ -161,11 +169,11 @@ function moranCheckboxSectionHTML(dataOptions){
 
 function moranCheckboxHTML(item,index){
     var temp_loader =  
-    '<label class="level-item"><input type="checkbox" onchange=checkMoranVarCount(this) class="leaflet-control-moran-selector" value="' +
+    '<label class="level"><input type="checkbox" onchange=checkMoranVarCount(this) class="leaflet-control-moran-selector" value="' +
     item.variable.slice(0,-1) +
     '" name="' +
     item.name +
-    '"><span>' +
+    '"><span class="icon-checkbox-checked"></span><span class="icon-checkbox-unchecked"></span><span>' +
     item.name +
     '</span></label>';
 
@@ -189,6 +197,10 @@ function disableMoranChecks(mdata){
 }
 
 function checkMoranVarCount(checkthis){
+    // check if values have changed and enable
+    // disable run_moran button
+    disableMoranButton();   
+
     // allow only 5 
     // variables at once
     var limit = 5; 
@@ -213,6 +225,37 @@ function checkMoranVarCount(checkthis){
     }
 }
 
+function disableMoranButton(){
+    var old_moran_var = gmoran_variables;
+    console.log("old moran",old_moran_var);
+    var new_moran_var = readMoran();
+    console.log("new moran",new_moran_var);
+
+    var matching = arraysMatch(old_moran_var.val,new_moran_var.val);
+    console.log(matching);
+    if(matching){
+        document.querySelector("#run_moran").disabled = true;
+    } else {
+        document.querySelector("#run_moran").disabled = false;
+    }
+
+}
+
+function arraysMatch (arr1, arr2) {
+
+	// Check if the arrays are the same length
+	if (arr1.length !== arr2.length) return false;
+
+	// Check if all items exist and are in the same order
+	for (var i = 0; i < arr1.length; i++) {
+		if (arr1[i] !== arr2[i]) return false;
+	}
+
+	// Otherwise, return true
+	return true;
+
+};
+
 /*
  *
  * Key  
@@ -225,9 +268,9 @@ function TractScaleHTML(colors){
     var temp = "temp range value";
     colors.forEach(function(color){
         swatchHtml += '<div class="level" id="color-' + color.value 
-            +'"><svg width="50" height="50"><rect width="50" height="50" class="tract" stroke="#3388ff"'  
+            +'"><span><svg width="48" height="48"><rect width="48" height="48" class="tract" stroke="#3388ff"'  
             + ' stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="' + color.color 
-            +'" fill-opacity="0.2"/></svg><span id="name-'+ color.value +'">'+ color.text
+            +'" fill-opacity="0.2"/></svg></span><span id="name-'+ color.value +'">'+ color.text
             +'</span></div>';
     });
 
@@ -267,11 +310,17 @@ function SchoolColorScale(){
 
 //dropdown
 function MdropDown(e){
-    var dropdn = e.nextSibling.style.display;
-    if(dropdn != "block"){
-        e.nextSibling.style.display = "block";
+    var dropdn = e.nextSibling.style.visibility;
+    if(dropdn != "visible"){
+        //e.nextSibling.style.display = "block";
+        e.nextSibling.style.visibility = "visible";
+        e.nextSibling.style.height = "100%";
+        e.childNodes[1].style.transform = "rotate(180deg)";
     } else {
-        e.nextSibling.style.display = "none";
+//        e.nextSibling.style.opacity = 1;
+        e.nextSibling.style.visibility = "hidden";
+        e.nextSibling.style.height = 0;
+        e.childNodes[1].style.transform = "rotate(0deg)";
     }
 }
 
@@ -308,5 +357,19 @@ Object.filterOutVal = function( obj, filter) {
 
     return result;
 }
+function getNextSiblings(elem, filter) {
+    var sibs = [];
+    while (elem = elem.nextSibling) {
+        if (elem.nodeType === 3) continue; // text node
+        if (!filter || filter(elem)) sibs.push(elem);
+    }
+    return sibs;
+}
 
-
+function filterClassName(elem) {
+    if(elem.className == 'school_name_data') {
+        return true;
+    } else {
+        return false;
+    } 
+}

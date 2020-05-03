@@ -78,7 +78,7 @@ function makeSchoolMarkers(schools,markers){
             ps_enroll_t5: e.ps_enroll_t5,
             grad12_ba: e.grad12_ba
         });
-        marker.bindPopup(title);
+        marker.bindPopup("<h4>" + title + "</h4>");
         markers.addLayer(marker);
     
     });
@@ -148,11 +148,10 @@ function updateSchoolsYear(markers,year){
 
 function updateSchoolsPopup(markers,schools){
     variable = readSchool();
-    console.log(markers);
     markers.eachLayer( function(marker){
-        marker._popup.setContent(marker.options.title + 
-            " " + variable.name + 
-            " " + marker.options[variable.val] 
+        marker._popup.setContent("<div><h4>"+ marker.options.title +"</h4></div>" + 
+            " " + variable.name + ": <strong>" + 
+            marker.options[variable.val] + "</strong>"
         );
     });
 }

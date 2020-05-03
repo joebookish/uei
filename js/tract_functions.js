@@ -109,10 +109,10 @@ function colorTracts(mdata, weight_matrix){
             fillColor: getColor(layer.feature.properties.moran_stat),
             className:'tract'
         }),
-        layer.bindPopup('<div><strong class="title">Tract: ' + layer.feature.properties.NAME +
-            '</strong><strong class="title-right" > Total Score: ' +
+        layer.bindPopup('<div class="level"><h4>Tract: ' + layer.feature.properties.NAME +
+            '</h4>&nbsp;--&nbsp;<h4>Score: ' +
             layer.feature.properties.moran +
-            "</strong></div>" +
+            "</h4></div>" +
             buildMoranPopup(layer,moran_variables));
     }
 
@@ -181,11 +181,11 @@ function checkTractVarvsMoran(mdata){
 function buildMoranPopup(layer,moran_variables){
     var temp_html = "";
     for(i=0; i < moran_variables.name.length; i++ ){
-        temp_html += ("<p>"+ 
+        temp_html += ("<div>"+ 
                     moran_variables.name[i] +
                     ": " +
                     layer.feature.properties[moran_variables.val[i]] +  
-                    "</p>");
+                    "</div>");
     }
   
     return temp_html;

@@ -1,42 +1,47 @@
-//global variables for testing
-var weight_matrix;
-var dataOptions, schoolOptions, schools, data;
-var map, geojson;
-var mapOptions, basemaps, overlays;
-var markers, layerControl;
+(function(){
+    //global variables for testing
+    var weight_matrix;
+    var dataOptions, schoolOptions, schools, data;
+    var map, geojson;
+    var mapOptions, basemaps, overlays;
+    var markers, layerControl;
+    var gmoran_variables;
 
-//data urls
-var data_urls = [
-    "data_prod/geo_2000.geojson",
-    "data_prod/weight_matrix_2000.json",
-    "data_prod/acs5_variables.json",
-    "data_prod/schools_2000.json",
-    "data_prod/schools_variables2.json"
-];
+    //data urls
+    var data_urls = [
+        "data_prod/geo_2000.geojson",
+        "data_prod/weight_matrix_2000.json",
+        "data_prod/acs5_variables.json",
+        "data_prod/schools_2000.json",
+        "data_prod/schools_variables2.json"
+    ];
 
-//run base map
-uei_base();
+    //run base map
+    uei_base();
 
-// load mdata
-//create a promises to perform ajax requests
-var p_wait = Promise.all(data_urls.map(getJSON));
+    // load mdata
+    //create a promises to perform ajax requests
+    var p_wait = Promise.all(data_urls.map(getJSON));
 
-//return responses and excute other functions
-p_wait.then(function(data){
-    mdata = data[0];
-    weight_matrix= data[1];
-    dataOptions = data[2];
-    schools = data[3];
-    schoolOptions = data[4];
-}).then(load_tracts_setup
-).then(sidebar_menu_setup)
- .then(year_controller_setup)
- .then(census_controller_setup)
- .then(load_schools_setup)
- .then(school_controller_setup)
- .then(layer_controller_setup)
- .then(key_setup)
- .then(loading_screen);
+    //return responses and excute other functions
+    p_wait.then(function(data){
+        mdata = data[0];
+        weight_matrix= data[1];
+        dataOptions = data[2];
+        schools = data[3];
+        schoolOptions = data[4];
+    }).then(load_tracts_setup
+    ).then(sidebar_menu_setup)
+     .then(year_controller_setup)
+     .then(census_controller_setup)
+     .then(load_schools_setup)
+     .then(school_controller_setup)
+     .then(layer_controller_setup)
+     .then(key_setup)
+     .then(loading_screen)
+     .then(addDLchecks);
+})();
+
 
 /*
  *

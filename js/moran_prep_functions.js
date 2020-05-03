@@ -1,17 +1,14 @@
 function moranRun(mdata,moran_variables, weight_matrix){
-    
     var moran_Is =  moranI(mdata,weight_matrix);
-
     setMoranProp(mdata,moran_Is);
-    
-    console.log(moran_Is);
+     
     var colors = tractMoranRange(moran_Is.stat);
-    console.log(colors);
     TractColorScale(colors);
-
+    
+    //disable moran run button
+    disableMoranButton();
+    
     return moran_Is;
-    //return [dataset,geospatial,adjlist];
-    //return CalcLMI(dataset,geospatial,adjlist,true);
 }
 
 function setMoranProp(data, moran_Is){

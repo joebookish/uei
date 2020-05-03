@@ -79,8 +79,9 @@ function moranI(mdata){
 //for the total Zscores 
 function calcZs(mdata){
     //get moran variables
-    var moran_variables = readMoran();
-   
+    moran_variables = readMoran();
+    //global moran variables
+    gmoran_variables = moran_variables; 
     // will replace the mdata with scaled and centered values
     var tracts_mo_vars = generateDataset(mdata, moran_variables.val); 
     var z_tot_set = [];

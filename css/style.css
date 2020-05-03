@@ -1,7 +1,7 @@
-body {
-  padding: 0;
-  margin: 0;
-}
+/*
+ *
+ * style variables
+ */
 
 :root {
   --main-sch-color-sm: #ffeda0;
@@ -13,14 +13,33 @@ body {
   --main-sch-color-lg: #f03b20;
   --main-sch-color-lg-bk1: #f03b20bb;
   --main-sch-color-lg-bk2: #f03b2099;
+  --bold_orange: #DE3E1A;
+  --main_font: "Roboto";
+  --dark_blue: #83909e;
+  --light_pink: #f8938c;
+  --drop_dn_trans: 2ms;
+  --grey_md:#CCCCCC;
+  --grey_dk:#999999;
+  --grey_light:#e6e6e6;
+}
+
+/*
+ *
+ * main css
+ *
+ */
+
+body {
+  padding: 0;
+  margin: 0;
 }
 
 html,
 body,
 #my-map {
   height: 100%;
-  background-color: #DE3E1A;
-  font-family: "Roboto", sans-serif;
+  background-color: var(--bold_orange);
+  font-family: var(--main_font), sans-serif;
 }
 
 /* loading page  */
@@ -111,9 +130,42 @@ body,
     align-items:center;
 }
 
-.level span{
-    padding: 0.333rem;
-    text-algin: wrap;
+.level > span :not(.icon-dn) {
+    margin: 0.333rem;
+}
+
+.level.stack{
+    flex-direction: column;
+    align-items:flex-start;
+}
+
+.level .tract {
+    margin : 0.2rem;
+}
+
+.dropdown-container .level{
+    justify-content: flex-start;
+}
+
+section.level {
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+section:not(.hero){
+    margin: 0rem 0rem 1.5rem 0rem;
+}
+
+.level.dropdown {
+    align-items: center;
+    justify-content: space-between;
+}
+.level > .leaflet-control-layers-overlays {
+    justify-content: space-around;
+}
+
+.level .leaflet-marker-icon {
+    margin: 0.333rem;
 }
 
 .hero {
@@ -121,18 +173,13 @@ body,
     font-size: 1.5em;
     padding-top: 1rem;
 }
-label { 
-    padding-left: 0.25rem; 
-}
 
 input[type=range] {
-
     padding: 0.333rem;
-
 }
 
-.control {
-    flex-direction: column;
+.note {
+    margin: 0px 0px 10px 0px;
 }
 
 #run_moran {
@@ -179,7 +226,9 @@ label > span {
 
 .icon-dn, .icon-up {
     font-size: 0.5rem;
-    padding-left: 0.25rem;
+    padding: 0;
+    transition: transform var(--drop_dn_trans);
+    color: #999999;
 }
 
 
@@ -189,9 +238,132 @@ label > span {
 
 .dropdown-container {
     /* this hides the sub menu */
-    display: none;
+    /*display: none;*/
+    visibility: hidden;
+    transition: height var(--drop_dn_trans), visibility var(--drop_dn_trans);
+    height: 0;
+    overflow: hidden;
 }
 
+.dropdown {
+    padding: 0.33rem;
+}
+
+#tract_features > div {
+    background-color: #f6efee;
+    width: 95%;
+}
+#tract_features div:first-of-type{
+    border-radius: 3px 3px 0px 0px;
+}
+#tract_features div:last-of-type {
+    border-radius: 0px 0px 3px 3px;
+}
+
+/*
+ * input and active styles
+ */
+
+input[type="checkbox"], input[type="radio"]{
+  /* the javascript function addDLchecks */
+  /* creates checkboxes for the leaftlet control layers*/
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Show the unchecked when unchecked */
+input[type="checkbox"] ~ .icon-checkbox-unchecked {
+  display: inline;
+}
+input[type="checkbox"] ~ .icon-checkbox-checked {
+  display: none;
+}
+
+/* Show the checked when checked */
+input[type="checkbox"]:checked ~ .icon-checkbox-unchecked {
+  display: none;
+}
+input[type="checkbox"]:checked ~ .icon-checkbox-checked {
+  display: inline;
+}
+
+/* Show the unradio when unradio */
+input[type="radio"] ~ .icon-radio-unchecked {
+  display: inline;
+}
+input[type="radio"] ~ .icon-radio-checked2 {
+  display: none;
+}
+
+/* Show the radio when radio */
+input[type="radio"]:checked ~ .icon-radio-unchecked {
+  display: none;
+}
+input[type="radio"]:checked ~ .icon-radio-checked2 {
+  display: inline;
+}
+
+.icon-radio-unchecked,.icon-checkbox-unchecked,
+.icon-radio-checked2,.icon-checkbox-checked{
+    color: var(--grey_dk);
+}
+input[type="checkbox"]:active ~ .icon-checkbox-checked,
+input[type="checkbox"]:active ~ .icon-checkbox-unchecked,
+input[type="checkbox"]:hover ~ .icon-checkbox-checked,
+input[type="checkbox"]:hover ~ .icon-checkbox-unchecked,
+input[type="radio"]:active ~ .icon-radio-checked2,
+input[type="radio"]:active ~ .icon-radio-unchecked,
+input[type="radio"]:hover ~ .icon-radio-checked2,
+input[type="radio"]:hover ~ .icon-radio-unchecked {
+    color: var(--light_pink);
+}
+
+input[type="checkbox"]:disabled ~ .icon-checkbox-checked,
+input[type="checkbox"]:disabled ~ .icon-checkbox-unchecked,
+input[type="checkbox"]:disabled ~ .icon-checkbox-checked,
+input[type="checkbox"]:disabled ~ .icon-checkbox-unchecked,
+input[type="radio"]:disabled ~ .icon-radio-checked2,
+input[type="radio"]:disabled ~ .icon-radio-unchecked,
+input[type="radio"]:disabled ~ .icon-radio-checked2,
+input[type="radio"]:disabled ~ .icon-radio-unchecked {
+    color: var(--grey_light);
+}
+/*
+ * button styles
+ */
+button {
+    display:inline-block;
+    padding: 0.8em 1.45em;
+    margin:0.1em;
+    border:0.15em solid var(--grey_md);
+    border-radius: 3px;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Segoe UI','Roboto',sans-serif;
+    font-weight:400;
+    color:#000000;
+    background-color:var(--grey_md);
+    text-align:center;
+    position:relative;   
+}
+
+button:hover:not([disabled]) {
+    border-color:var(--light_pink);
+}
+
+button:active {
+    background-color:var(--light_pink);
+}
+
+button:disabled {
+    color: var(--grey_dk);
+    background-color:var(--grey_light);
+    border:0.15em solid var(--grey_light);
+}
+
+button h4 {
+    margin: 0px;
+}
 
 /*
  *

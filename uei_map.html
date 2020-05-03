@@ -53,23 +53,27 @@
             </section>
               
               <!-- Control tab content  -->
-              <section id="year_control" name="year controller">
-                 <div class=title id="dYear">displayed year: 2000</div>
-                 <input type="range" id="fromYear" class="level-item" value="2000" min="2000" step="1" max="2015" oninput=yearDisplay()>
-                 <button id="updateYear" class="button level-item is-small" disabled ><label for="fromYear" id="fYear">2000</label></button>
+              <section class="level">
+                  <div id="year_control" name="year controller" class="level stack">
+                      <div class=title id="dYear"><h3>displayed year: 2000<h3></div>
+                     <input type="range" id="fromYear"  value="2000" min="2000" step="1" max="2015" oninput=yearDisplay()>
+                     <button id="updateYear"  disabled ><label for="fromYear" id="fYear"><h4>2000</h4></label></button>
+                  </div>
+                  <div id="layer-layer-control" name="map layer controller" class="level stack">
+                      <div class=title><h3>displayed data: </h3></div>
+                     <span id="layercontrol"></span>
+                  </div>
               </section>
-              <section id="layer-layer-control" name="map layer controller">
-                 <div class=title>displayed data</div>
-                 <span id="layercontrol"></span>
-              </section>
+
               <section name="student outcomes data controller">
-                 <div class=title>student outcomes</div>
-                 <div id="school_data"></div>
+                 <div><h3>student outcomes: </h3></div>
+                 <div id="school_data" class="level stack"></div>
               </section>
+
              <section name="tract variables">
-                 <div class=title>census tract features</div>
-                 <div id="tract_features"></div> 
-                 <button id="run_moran" class="button level-item" type="button">update features</button>
+                 <div class=title><h3>census tract features: </h3></div>
+                 <div id="tract_features" class="level stack"></div> 
+                 <button id="run_moran"  type="button" disabled><h4>update features</h4></button>
               </section>
 
 
@@ -85,30 +89,41 @@
                   <h1 class="title"><span class="icon-rt"></span> Key</h1>
                 </div>
             </section>
-            <section class="section">
-                <div class="level" id="tracts-key" name="key-for-cencus-tracts">
-                    <div class="level-item">
-<svg pointer-events="none" width="110" height="85" viewBox="0 0 110 85" style="transform:translate3d(0px, 0px, 0px);">
-<path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#74a9cf" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
-</svg>
-                       <span>census tract</span>
-                    </div>
-                    <div id="tract_color_scale" name="tract color scale" class="level level-item">
-                    </div>
+            <section class="section" class="level stack">
+                <div class="level">
+                    <span><svg pointer-events="none" width="110" height="85" viewBox="0 0 110 85" style="transform:translate3d(0px, 0px, 0px);">
+                        <path class="tract" stroke="#3388ff" stroke-opacity="1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#74a9cf" fill-opacity="0.2" fill-rule="evenodd" d="M1106 986L1117 970L1185 1007L1155 1047L1152 1046L1151 1048L1144 1046L1143 1040L1136 1042L1130 1036L1133 1032L1135 1025L1134 1024L1119 1025L1114 1028L1107 1025L1110 1034L1103 1036L1102 1035L1100 1026L1096 1027L1098 1022L1097 1019L1091 1016L1086 1011L1086 1001L1084 1001L1084 996L1077 990L1088 975L1105 987z" style="transform:translate3d(-1075px, -968px, 0px)"></path>
+                    </svg></span>
+                    <span><h3>census tract</h3></span>
                 </div>
+                <div >
+                    <span><h3>census tract color scale :</h3></span>
+                </div>               
+                <div class="note">
+                    <span>weighted statistic of selected census tract features, see controls panel  </span><span class=icon-gear></span>
+                </div>
+               <div id="tract_color_scale" name="tract color scale" class="level stack">
+                </div>
+            </section>
+
+            <section class="section" class="level stack">
                 <div class="level" id="schools-key" name="key-for-schools">
-                    <div class="level">
-                        <div class="level">
-                            <div class="leaflet-marker-icon marker-cluster marker-cluster-large"  style="position: relative; width: 40px; height: 40px; opacity: 1;">
-                                <div style="position: absolute;">
-                                    <span>#</span>
-                                </div>
+                    <div>
+                        <div class="leaflet-marker-icon marker-cluster marker-cluster-large"  style="position: relative; width: 40px; height: 40px; opacity: 1;">
+                            <div style="position: absolute;">
+                                <span>#</span>
                             </div>
-                            <span>cluster of high schools, # number of schools in cluster</span>
                         </div>
                     </div>
+                    <span><h3>cluster of high schools</h3></span>
                 </div>
-                <div id="school_color_scale">
+                <div>
+                    <span><h3>school marker color scale:</h3></span>
+                </div>               
+               <div class="note">
+                    <span>number of students in freshman class cohort</span>
+                </div>               
+                <div id="school_color_scale" class="level stack">
                 </div>
             </section>
               
